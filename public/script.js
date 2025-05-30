@@ -352,7 +352,7 @@ async function getHeadingAndIntroText(userRequest){
 function exportToPDF() {
     toast.classList.remove("hidden")
 
-    const element = document.getElementById("timeline-content-inner");
+    const element = document.getElementById("timeline-content");
   
     const opt = {
       margin:       0.5,

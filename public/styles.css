@@ -392,6 +392,7 @@ body > header .header-inner{
     width:34rem;
     border-radius:.5rem;
     height:3rem;
+    border: 1px solid rgba(0, 0, 0, 0.11);
     position: relative;
     overflow: hidden;
     background: linear-gradient(90deg, white 25%, #fafafa 50%, white 75%);
@@ -521,6 +522,8 @@ body > header .header-inner{
     padding:0 0 .5rem 0;
     margin: 0 auto 4rem auto;
     max-width:30rem;
+    page-break-inside: avoid;
+    break-inside: avoid;
 
     .top{
         background-color: var(--darker-white);
@@ -528,8 +531,8 @@ body > header .header-inner{
         padding:1rem 1rem;
         border-bottom: 1px solid rgba(0, 0, 0, 0.24);
         margin:0 0 .5rem 0;
-        border-top-left-radius: .4rem;
-        border-top-right-radius: .4rem;
+        border-top-left-radius: .8rem;
+        border-top-right-radius: .8rem;
     }
 
     p{
@@ -589,6 +592,8 @@ body > header .header-inner{
     align-items: start;
     justify-content: space-between;
     gap: 3rem;
+    page-break-inside: avoid;
+    break-inside: avoid;
     margin: 0 0 3rem 0;
 }
 

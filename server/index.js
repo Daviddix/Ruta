@@ -4,7 +4,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 import dotenv from "dotenv";
 import cors from "cors"; // Import the cors middleware
-import { makeExternalFunctionCall } from "./lib/helper.js";
+import { extractJSON, makeExternalFunctionCall } from "./lib/helper.js";
 
 dotenv.config();
 
@@ -130,28 +130,28 @@ Launch : 🚀
       contents,
     });
 
-    const parsedResponse = JSON.parse(response.candidates[0].content.parts[0].text)
+    const parsedResponse = extractJSON(response.candidates[0].content.parts[0].text)
 
-    const allTitles = parsedResponse.timeline.map((day)=>  {
-      return {title : day.title}
-  })
+  //   const allTitles = parsedResponse.timeline.map((day)=>  {
+  //     return {title : day.title}
+  // })
 
-    const allResources = await makeExternalFunctionCall(allTitles)
+  //   const allResources = await makeExternalFunctionCall(allTitles)
     
-    parsedResponse.timeline.forEach((day => {
-      if(!day.shouldContainResources){
-        day.resources = []
-        return
-      }
-      const foundResource = allResources.find((resource)=> resource.title == day.title)
+  //   parsedResponse.timeline.forEach((day => {
+  //     if(!day.shouldContainResources){
+  //       day.resources = []
+  //       return
+  //     }
+  //     const foundResource = allResources.find((resource)=> resource.title == day.title)
 
-      if(!foundResource){
-        day.resources = []
-        return
-      }
+  //     if(!foundResource){
+  //       day.resources = []
+  //       return
+  //     }
       
-      day.resources = foundResource.resources
-    }))
+  //     day.resources = foundResource.resources
+  //   }))
 
     res
       .status(200)

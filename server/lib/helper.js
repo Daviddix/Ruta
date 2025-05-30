@@ -146,3 +146,13 @@ export async function makeExternalFunctionCall(arrayOfDays) {
   }
 }
 
+export function extractJSON(text) {
+  const firstBrace = text.indexOf('{');
+  const lastBrace = text.lastIndexOf('}');
+  if (firstBrace === -1 || lastBrace === -1 || firstBrace > lastBrace) {
+    throw new Error("No valid JSON found in the string.");
+  }
+
+  const jsonString = text.substring(firstBrace, lastBrace + 1);
+  return JSON.parse(jsonString);
+}
