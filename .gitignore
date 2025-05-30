@@ -1,0 +1,9 @@
+.temp/
+dist/
+node_modules/
+*-lock.json
+build/
+tsbuildinfo
+*tsbuildinfo*
+bless-deploy.key
+*.env
