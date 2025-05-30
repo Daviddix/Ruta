@@ -388,6 +388,31 @@ body > header .header-inner{
     font-size: 1.8rem;
 }
 
+.timeline-top-inner h1 .fake-h1 {
+    width:34rem;
+    border-radius:.5rem;
+    height:3rem;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(90deg, white 25%, #fafafa 50%, white 75%);
+    background-size: 200% 100%;
+    animation: loading-effect 1.5s infinite linear;
+    color: transparent;
+    -webkit-border-radius:.5rem;
+    -moz-border-radius:.5rem;
+    -ms-border-radius:.5rem;
+    -o-border-radius:.5rem;
+}
+
+@keyframes loading-effect {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
 .timeline-top-inner button {
     background-color: var(--white);
     border: 1px solid rgba(0, 0, 0, 0.24);

@@ -229,7 +229,7 @@ function createAndRenderTimeline(timelineArray = []) {
   
       timelineContainer.appendChild(timelineItem);
     });
-  }
+}
   
 
 function hideWelcomeMessages(){
@@ -263,6 +263,7 @@ function testSkillsHandler(text){
 }
 
 async function makeFetchRequest(userRequest){
+    timelineHeader.innerHTML = `<div class="fake-h1"></div>`
     isGenerating = true
     isLoading = true
     showStopButton()
@@ -273,7 +274,7 @@ async function makeFetchRequest(userRequest){
 
            updateRutaUI(introObj)
 
-           timelineHeader.textContent = introObj.title
+           timelineHeader.innerHTML = introObj.title
 
            roadmapTitle = introObj.title
 

@@ -130,7 +130,7 @@ Launch : 🚀
       contents,
     });
 
-    const parsedResponse = JSON.parse(response.candidates[0].content.parts[0].text)
+    const parsedResponse = JSON.parse(response.text)
 
 
     const allTitles = parsedResponse.timeline.map((day)=>  {
