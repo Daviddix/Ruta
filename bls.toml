@@ -1,0 +1,33 @@
+name = "template_name"
+version = "1.0.0"
+type = "text"
+production_host = "silver-donkey-gertrudis-u7lvotea.bls.dev"
+
+[deployment]
+permission = "public"
+nodes = 1
+
+[build]
+dir = "build"
+entry = "template_name_debug.wasm"
+command = "npm run build:debug"
+
+[build_release]
+dir = "build"
+entry = "template_name.wasm"
+command = "npm run build:release"
+
+[[deployments]]
+name = "blessnet"
+description = ""
+cid = "bafybeiff6kd2datmmzkrokzzss77im6gau5j35mi4tunrwhbmkfvs62ppy"
+created = "2025-05-23T16:38:03.638Z"
+
+  [deployments.runtime]
+  url = "blessnet.tar.gz"
+  checksum = "7a5b7fe8703e96fe253ea59f27cccb64a3cee37a34e17f73c53d5872eb5d9bfc"
+
+[deployment]
+permission = "public"
+nodes = 1
+permissions = [ "http://localhost:3000/generate" ]

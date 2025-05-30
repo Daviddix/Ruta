@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="./styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="./ruta-logo.svg" type="image/x-icon">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&display=swap');
+    </style>
+  <title>Ruta | Personalized Roadmaps </title>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="logo-container">
+        <img src="./ruta-logo.svg" alt="ruta logo">
+        <h1>Ruta</h1>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="chat-section">
+
+      <div class="chat-inner">
+
+        <div class="chats-container">
+
+          <div class="welcome-message">
+            <h1>What do you want to learn?</h1>
+            <p>Use Ruta to generate a structured roadmap & timeline that will help you master any skill</p>
+          </div>
+  
+        </div>
+
+        
+        <div class="test-skills">
+          <h3>I WANT TO LEARN</h3>
+
+          <div class="all-test-skills">
+
+            <span>UX Writing</span>
+            <span>Web Development</span>
+            <span>How to Cook</span>
+          </div>
+        </div>
+
+        <form class="chat-input">
+          <textarea name="chat-box" id="chat-box" placeholder="What do you want to learn?"></textarea>
+
+          <button>
+            <img src="./send-icon.svg" alt="send message" class="send">
+            <img src="./stop.svg" alt="stop message" class="stop">
+          </button>
+        </form>
+      </div>
+
+
+    </section>
+
+    <section class="timeline hidden">
+
+      <header class="timeline-top">
+
+        <div class="timeline-top-inner">
+
+          <button class="down">
+            <img src="./down-icon.svg" alt="down icon">
+          </button>
+
+        <h1>Guide to Becoming an Amazing UX Writer</h1>
+
+
+
+        <div class="views">
+          <button class="timeline-toggle active">
+            <img src="./timeline-icon.svg" alt="timeline">
+            
+            <span>Timeline View</span>
+          </button>
+          
+          <button class="roadmap-toggle">
+            <img src="./roadmap-icon.svg" alt="roadmap-icon.svg">
+
+            <span>Roadmap View</span>
+          </button>
+        </div>
+
+
+
+        <button class="export-btn">
+          <img src="./export-icon.svg" alt="export-icon.svg">
+
+            <span>Export</span>
+        </button>
+        </div>
+
+        
+      </header>
+
+      <div class="timeline-content">
+        <div class="timeline-content-inner" id="timeline-content-inner">
+          
+          <div class="timeline-loader hidden">
+            <div class="spinner"></div>
+            <p>Loading Timeline...</p>
+          </div>
+
+          <div class="timeline-error hidden">
+            <h2>Timeline Error</h2>
+            <p>Oops , Seems like an error while we tried to fetch your timeline. Please try again</p>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <div class="toast hidden">
+      <img src="./export-icon.svg" alt="export-icon.svg"> <p>Exporting & Downloading Roadmap</p>
+    </div>
+  </main>
+  
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script src="./script.js"></script>
+</html>
