@@ -106,7 +106,7 @@ Launch : 🚀
         "shouldContainResources" : "a boolean that indicated if this day should contain resources or not e.g rest and relaxation shouldn't contain resources so it would be false",
       }
     ]
-  }`,
+  } Make sure the JSON is fully parsable. Do not break JSON syntax or return text outside the JSON block.`,
         },
       ],
     };
@@ -130,8 +130,7 @@ Launch : 🚀
       contents,
     });
 
-    const parsedResponse = JSON.parse(response.text)
-
+    const parsedResponse = JSON.parse(response.candidates[0].content.parts[0].text)
 
     const allTitles = parsedResponse.timeline.map((day)=>  {
       return {title : day.title}

@@ -21,6 +21,7 @@ const timelineToggleButton = document.querySelector(".views > button.timeline-to
 const roadmapToggleButton = document.querySelector(".views > button.roadmap-toggle")
 const exportButton = document.querySelector(".export-btn")
 const toast = document.querySelector(".toast")
+const timelineInnerHeader = document.querySelector(".timeline-top-inner")
 const BASEURL = "http://localhost:3000"
 let isGenerating = false
 isLoading = false
@@ -47,6 +48,7 @@ form.addEventListener("submit", (e)=>{
     const userMessage = textarea.value.trim()
     updateChatUI(userMessage)
     makeFetchRequest(userMessage)
+    disableHeaderButtons()
 })
 
 minimizeTimelineButton.addEventListener("click", ()=>{
@@ -300,12 +302,16 @@ async function makeFetchRequest(userRequest){
             const responseInJson = await response.json()
 
             createAndRenderTimeline(responseInJson.timeline)
+
+            enableHeaderButtons()
             
             generatedData = responseInJson.timeline
             
         }
         catch(error){
             showTimelineError()
+            disableHeaderButtons()
+            isError = true
             if (error.name === 'AbortError') {
                 console.log('Fetch aborted');
             } else {
@@ -363,4 +369,12 @@ function exportToPDF() {
     }, 1000)
 
 
+}
+
+function disableHeaderButtons(){
+    timelineInnerHeader.classList.add("disabled")
+}
+
+function enableHeaderButtons(){
+    timelineInnerHeader.classList.remove("disabled")
 }

@@ -455,6 +455,11 @@ body > header .header-inner{
     border: 1px solid rgba(0, 0, 0, 0.24);
 }
 
+.timeline-top-inner.disabled button:not(.back){
+    opacity: .4;
+    pointer-events: none;
+}
+
 .timeline-content .timeline-content-inner{
     width:90%;
     max-width:60rem;
