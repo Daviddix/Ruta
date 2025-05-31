@@ -1,8 +1,8 @@
 :root{
     --bg-color : #F9F6FE;
     --white: #fff;
-    --darker-white : hsl(0, 0%, 99%);
-    --more-darker-white: hsl(0, 0%, 98%);
+    --darker-white : hsl(0, 0%, 97%);
+    --more-darker-white: hsl(0, 0%, 96%);
     --primary-color: #9042F1;
     --primary-darker: #190432;
 
@@ -150,7 +150,7 @@ body > header .header-inner{
     flex: 1; /* Allow it to grow and take available space */
     overflow-y: auto; /* Enable scrolling when content overflows */
     padding: 2rem 0;
-    align-items: flex-end;
+    align-items: flex-start;
     justify-content: flex-start; /* Align chats at the top */
 }
 
@@ -299,6 +299,7 @@ body > header .header-inner{
         width:100%;
         background-color: transparent;
         border: none;
+        resize: none;
         outline: none;
     }
 
@@ -414,7 +415,7 @@ body > header .header-inner{
 
 .timeline-top-inner h1{
     max-width: 20rem;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
 }
 
 .timeline-top-inner h1 .fake-h1 {
@@ -485,7 +486,7 @@ body > header .header-inner{
     border: 1px solid rgba(0, 0, 0, 0.24);
 }
 
-.timeline-top-inner.disabled button:not(.back){
+.timeline-top-inner.disabled button:not(.down){
     opacity: .4;
     pointer-events: none;
 }
@@ -526,6 +527,20 @@ body > header .header-inner{
     font-size: 1.4rem;
     font-weight: 600;
     text-align: center;
+}
+
+.timeline-error button{
+    background-color: var(--more-darker-white);
+    opacity: 1;
+    border: 1px solid rgba(0, 0, 0, 0.438);
+    padding: .5rem 2rem;
+    margin: .5rem 0 0 0;
+    border-radius: .8rem;
+    -webkit-border-radius: .8rem;
+    -moz-border-radius: .8rem;
+    -ms-border-radius: .8rem;
+    -o-border-radius: .8rem;
+    font-weight: 600;
 }
 
 .timeline-loader.hidden,

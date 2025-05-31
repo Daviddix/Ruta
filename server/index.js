@@ -86,6 +86,21 @@ Organize : 🗂️
 Visualize : 🖼️
 Refactor : 🛠️
 Launch : 🚀
+
+Contextual Emoji Adjustment Rules:
+When context demands specificity, override the base emoji with a more relevant one:
+
+"Practice drawing" → ✏️ (instead of 🧪)
+
+"Research animals" → 🐘 or 🐾 (instead of 🔍)
+
+"Practice coding" → 💻
+
+"Explore typography" → 🔤
+
+"Build a portfolio site" → 🌐
+
+Avoid generic repetition — keep the roadmap visually engaging and emotionally resonant through relevant symbolism.
           
           Make sure the descriptions in each milestone feel like a knowledgeable teacher is giving thoughtful advice to a beginner. They should be insightful, connected to the goal, and flow naturally like a structured lesson plan.
           Don't just make it learning all through, also add other things that are important when someone is learning e.g resting , revising previous topics , practicing , checking progress, and others
@@ -105,6 +120,86 @@ Launch : 🚀
         "emoji" : "An emoji related to the category e.g if the category is research, the emoji should be a magnifying glass emoji(🔍)",
         "emojiDominantColor" : "A hexcode of the dominant color of the emoji in the emoji field",
         "emojiDominantDarkerColor" :"A hexcode of the emojiDominantColor but a darker version",
+        //here are some examples for the colors : [
+  {
+    "category": "Research",
+    "emoji": "🔍",
+    "emojiDominantColor": "#5E5E5E",
+    "emojiDominantDarkerColor": "#3E3E3E"
+  },
+  {
+    "category": "Practice (drawing)",
+    "emoji": "✏️",
+    "emojiDominantColor": "#F4C542",
+    "emojiDominantDarkerColor": "#C39F24"
+  },
+  {
+    "category": "Research (animals)",
+    "emoji": "🐘",
+    "emojiDominantColor": "#9A9A9A",
+    "emojiDominantDarkerColor": "#6B6B6B"
+  },
+  {
+    "category": "Learn",
+    "emoji": "📘",
+    "emojiDominantColor": "#2B61D4",
+    "emojiDominantDarkerColor": "#1C4091"
+  },
+  {
+    "category": "Plan",
+    "emoji": "🧭",
+    "emojiDominantColor": "#D87C1D",
+    "emojiDominantDarkerColor": "#A65F17"
+  },
+  {
+    "category": "Reflect",
+    "emoji": "🪞",
+    "emojiDominantColor": "#8DA3B4",
+    "emojiDominantDarkerColor": "#617381"
+  },
+  {
+    "category": "Build",
+    "emoji": "🧱",
+    "emojiDominantColor": "#C1440E",
+    "emojiDominantDarkerColor": "#912F07"
+  },
+  {
+    "category": "Test (code)",
+    "emoji": "🧪",
+    "emojiDominantColor": "#7FB0D6",
+    "emojiDominantDarkerColor": "#5583A1"
+  },
+  {
+    "category": "Present",
+    "emoji": "🎤",
+    "emojiDominantColor": "#3D3D3D",
+    "emojiDominantDarkerColor": "#2A2A2A"
+  },
+  {
+    "category": "Review",
+    "emoji": "🔁",
+    "emojiDominantColor": "#4285F4",
+    "emojiDominantDarkerColor": "#2F5EB6"
+  },
+  {
+    "category": "Organize",
+    "emoji": "🗂️",
+    "emojiDominantColor": "#F4D03F",
+    "emojiDominantDarkerColor": "#C1A72C"
+  },
+  {
+    "category": "Visualize",
+    "emoji": "🖼️",
+    "emojiDominantColor": "#87B7E0",
+    "emojiDominantDarkerColor": "#5D85A2"
+  },
+  {
+    "category": "Launch",
+    "emoji": "🚀",
+    "emojiDominantColor": "#C13B2F",
+    "emojiDominantDarkerColor": "#8F271F"
+  }
+]
         "shouldContainResources" : "a boolean that indicated if this day should contain resources or not e.g rest and relaxation shouldn't contain resources so it would be false",
       }
     ]

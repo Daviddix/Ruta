@@ -20,7 +20,7 @@ const roadmapToggleButton = document.querySelector(".views > button.roadmap-togg
 const exportButton = document.querySelector(".export-btn")
 const toast = document.querySelector(".toast")
 const timelineInnerHeader = document.querySelector(".timeline-top-inner")
-const BASEURL = "https://ruta.up.railway.app"
+const BASEURL = "http://localhost:3000"
 let isGenerating = false
 let isLoading = false
 let isError = false
@@ -127,6 +127,8 @@ function updateChatUI(input){
 function updateRutaUI(headingAndIntroObj){
     const rutaMessage = document.createElement("article");
 
+    rutaMessage.classList.add("ruta-message")
+
     const d = Date.now()
 
     rutaMessage.id = d
@@ -169,6 +171,7 @@ function updateRutaUI(headingAndIntroObj){
 
 function updateRutaUIWithError(errorMessage){
     const rutaMessage = document.createElement("article");
+    rutaMessage.classList.add("ruta-message")
 
     rutaMessage.innerHTML = `
       <img src="./ruta-logo.svg" alt="">
@@ -212,9 +215,16 @@ function showTimelineError(){
         timelineErrorElement.innerHTML = `
         <h2>Timeline Error</h2>
         <p>Oops , Seems like an error while we tried to fetch your timeline. Please try again</p>
+        <button class="error-retry-btn">Retry</button>
         `
         timelineContainer.appendChild(timelineErrorElement)
         timelineHeader.innerHTML = `Timeline Generation Error`
+        const timelineErrorButton = timelineErrorElement.querySelector(".error-retry-btn")
+        const messageToRetry = document.querySelectorAll(".user-bubble p")
+        const lastMessageToRetry = messageToRetry[messageToRetry.length - 1]
+        timelineErrorButton.addEventListener("click", ()=>{
+            refetch(lastMessageToRetry.textContent)
+        })
         isLoading = false
         isError = true
 }
@@ -349,6 +359,8 @@ async function makeFetchRequest(userRequest){
             dot.classList.add("done")
             
             generatedData = responseInJson.timeline
+
+            lastRutaMessageId=""
             
         }
         catch(error){
@@ -359,6 +371,88 @@ async function makeFetchRequest(userRequest){
 
             const dot = lastRutaMessage.querySelector(".status .dot")
 
+            dot.classList.add("error")
+            isError = true
+            if (error.name === 'AbortError') {
+                console.log('Fetch aborted');
+            } else {
+                console.error('Error fetching data:', error);
+            }
+        }
+        finally{
+            hideStopButton()
+            isGenerating = false
+            isLoading=false
+        }
+}
+
+async function refetch(userRequest){
+    timelineHeader.innerHTML = `<div class="fake-h1"></div>`
+    timelineContainer.innerHTML = ""; // Clear existing content
+    isGenerating = true
+    isLoading = true
+    showStopButton()
+    let lastRutaMessage;
+    showTimelineLoader()
+    try{
+        const introObj =  await getHeadingAndIntroTextRetry(userRequest)
+        
+        if (!introObj || !introObj.title || !introObj.intro) {
+            throw new Error("Invalid intro object received");
+        }
+
+        lastRutaMessage = document.getElementById(lastRutaMessageId)
+
+        lastRutaMessage.querySelector(".ruta-status .status p").innerText = "Regenerating Timeline & Roadmap"
+
+           timelineHeader.innerHTML = introObj.title
+
+           roadmapTitle = introObj.title
+
+           const fetchPayload = {
+            todaysDate : new Date(),
+            titleOfRoadmap : introObj.title,
+            userRequest
+           }
+
+            const response = await fetch(`${BASEURL}/generate`, {
+                body : JSON.stringify(fetchPayload),
+                signal: abortController.signal,
+                method : "POST",
+                headers : {
+                    "Content-Type" : "application/json"
+                }
+            })
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const responseInJson = await response.json()
+
+            createAndRenderTimeline(responseInJson.timeline)
+
+            enableHeaderButtons()
+
+            lastRutaMessage.querySelector(".ruta-status .status p").innerText = "Finished Generating Timeline & Roadmap"
+
+            const dot = lastRutaMessage.querySelector(".status .dot")
+
+            dot.classList.remove("error")
+            dot.classList.add("done")
+            
+            generatedData = responseInJson.timeline
+            
+        }
+        catch(error){
+            console.log(error)
+            showTimelineError()
+            disableHeaderButtons()
+            lastRutaMessage.querySelector(".ruta-status .status p").innerText = "Error Generating Timeline & Roadmap"
+
+            const dot = lastRutaMessage.querySelector(".status .dot")
+
+            dot.classList.remove("done")
             dot.classList.add("error")
             isError = true
             if (error.name === 'AbortError') {
@@ -395,6 +489,29 @@ async function getHeadingAndIntroText(userRequest){
     }
     catch(err){
         updateRutaUIWithError(err.message)
+    }
+}
+
+async function getHeadingAndIntroTextRetry(userRequest){
+    try{
+        const response = await fetch(`${BASEURL}/get-intro-text`, {
+            body : JSON.stringify({userRequest}),
+            method : "POST",
+            headers : {
+                "Content-Type" : "application/json"
+            }
+        })
+
+        if(!response.ok) {
+            throw new Error("Seems like an error occurred while trying to generate your timeline. Please try again")
+        }
+
+        const responseInJson = await response.json()
+
+        return responseInJson
+    }
+    catch(err){
+        console.log(err)
     }
 }
 
