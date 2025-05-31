@@ -51,11 +51,11 @@ app.post("/get-intro-text", async (req, res) => {
       contents,
     });
 
-    const parsedResponse = extractJSON(response.candidates[0].content.parts[0].text)
+    const parsedResponse = extractJSON(
+      response.candidates[0].content.parts[0].text
+    );
 
-    res
-      .status(200)
-      .json(parsedResponse);
+    res.status(200).json(parsedResponse);
   } catch (err) {
     console.log(err);
     res.status(500).send("Server Error");
@@ -132,32 +132,32 @@ Launch : 🚀
       contents,
     });
 
-    const parsedResponse = extractJSON(response.candidates[0].content.parts[0].text)
+    const parsedResponse = extractJSON(
+      response.candidates[0].content.parts[0].text
+    );
 
-  //   const allTitles = parsedResponse.timeline.map((day)=>  {
-  //     return {title : day.title}
-  // })
+    //   const allTitles = parsedResponse.timeline.map((day)=>  {
+    //     return {title : day.title}
+    // })
 
-  //   const allResources = await makeExternalFunctionCall(allTitles)
-    
-  //   parsedResponse.timeline.forEach((day => {
-  //     if(!day.shouldContainResources){
-  //       day.resources = []
-  //       return
-  //     }
-  //     const foundResource = allResources.find((resource)=> resource.title == day.title)
+    //   const allResources = await makeExternalFunctionCall(allTitles)
 
-  //     if(!foundResource){
-  //       day.resources = []
-  //       return
-  //     }
-      
-  //     day.resources = foundResource.resources
-  //   }))
+    //   parsedResponse.timeline.forEach((day => {
+    //     if(!day.shouldContainResources){
+    //       day.resources = []
+    //       return
+    //     }
+    //     const foundResource = allResources.find((resource)=> resource.title == day.title)
 
-    res
-      .status(200)
-      .json(parsedResponse);
+    //     if(!foundResource){
+    //       day.resources = []
+    //       return
+    //     }
+
+    //     day.resources = foundResource.resources
+    //   }))
+
+    res.status(200).json(parsedResponse);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error"); // Send a proper error response
@@ -165,14 +165,12 @@ Launch : 🚀
 });
 
 app.get("/test", async (req, res) => {
-  try{
-    const data = await makeExternalFunctionCall([{title : "basics of UX writing"}, {title : "how to conduct user research"}])
-    res.send(data)
+  try {
+    res.send("data received successfully");
+  } catch (err) {
+    res.send(err);
   }
-  catch(err){
-    res.send(err)
-  }
-})
+});
 
 app.listen(PORT, () => {
   console.log("I am alive");
