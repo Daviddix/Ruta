@@ -26,3 +26,8 @@ created = "2025-05-31T02:42:16.400Z"
   [deployments.runtime]
   url = "blessnet.tar.gz"
   checksum = "a01b5df844bc9fdbc01fc264fe0a55c84db7188d6ed4aa1a6c52e699c2a603b1"
+
+[deployment]
+permission = "public"
+nodes = 1
+permissions = [ "https://ruta.up.railway.app/" ]

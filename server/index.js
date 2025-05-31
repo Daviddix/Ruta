@@ -231,26 +231,26 @@ Avoid generic repetition — keep the roadmap visually engaging and emotionally 
       response.candidates[0].content.parts[0].text
     );
 
-    //   const allTitles = parsedResponse.timeline.map((day)=>  {
-    //     return {title : day.title}
-    // })
+      const allTitles = parsedResponse.timeline.map((day)=>  {
+        return {title : day.title}
+    })
 
-    //   const allResources = await makeExternalFunctionCall(allTitles)
+      const allResources = await makeExternalFunctionCall(allTitles)
 
-    //   parsedResponse.timeline.forEach((day => {
-    //     if(!day.shouldContainResources){
-    //       day.resources = []
-    //       return
-    //     }
-    //     const foundResource = allResources.find((resource)=> resource.title == day.title)
+      parsedResponse.timeline.forEach((day => {
+        if(!day.shouldContainResources){
+          day.resources = []
+          return
+        }
+        const foundResource = allResources.find((resource)=> resource.title == day.title)
 
-    //     if(!foundResource){
-    //       day.resources = []
-    //       return
-    //     }
+        if(!foundResource){
+          day.resources = []
+          return
+        }
 
-    //     day.resources = foundResource.resources
-    //   }))
+        day.resources = foundResource.resources
+      }))
 
     res.status(200).json(parsedResponse);
   } catch (err) {
