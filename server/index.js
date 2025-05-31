@@ -51,9 +51,11 @@ app.post("/get-intro-text", async (req, res) => {
       contents,
     });
 
+    const parsedResponse = extractJSON(response.candidates[0].content.parts[0].text)
+
     res
       .status(200)
-      .json(JSON.parse(response.candidates[0].content.parts[0].text));
+      .json(parsedResponse);
   } catch (err) {
     console.log(err);
     res.status(500).send("Server Error");

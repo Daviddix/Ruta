@@ -12,8 +12,6 @@ const sendIcon = document.querySelector(".chat-input button .send")
 const stopIcon = document.querySelector(".chat-input button .stop")
 const submitBtn = document.querySelector(".chat-input button")
 const timelineHeader = document.querySelector(".timeline-top-inner > h1")
-const timelineLoader = document.querySelector(".timeline-loader")
-const timelineError = document.querySelector(".timeline-error")
 const timelineContainer = document.querySelector(".timeline-content-inner");
 const timelineOnMobile = document.querySelector(".timeline")
 const minimizeTimelineButton = document.querySelector(".timeline-top-inner .down")
@@ -24,11 +22,12 @@ const toast = document.querySelector(".toast")
 const timelineInnerHeader = document.querySelector(".timeline-top-inner")
 const BASEURL = "http://localhost:3000"
 let isGenerating = false
-isLoading = false
-isError = false
+let isLoading = false
+let isError = false
 let exportType = ""
 let roadmapTitle = ""
 let generatedData = []
+let lastRutaMessageId = ""
 
 
 //event listeners
@@ -42,10 +41,12 @@ allTestSkillsButtons.forEach((button) => {
 form.addEventListener("submit", (e)=>{
     e.preventDefault()
     if(isGenerating){
-    abortController.abort()
+        abortController.abort();
+        abortController = new AbortController();
     return
     }
     const userMessage = textarea.value.trim()
+    if(!userMessage) return
     updateChatUI(userMessage)
     makeFetchRequest(userMessage)
     disableHeaderButtons()
@@ -56,7 +57,7 @@ minimizeTimelineButton.addEventListener("click", ()=>{
 })
 
 timelineToggleButton.addEventListener("click", (e)=>{
-    if(isLoading | isError){
+    if(isLoading || isError){
         return
     }
     if(e.currentTarget.classList.contains("active")){
@@ -100,9 +101,12 @@ function updateChatUI(input){
 
     userMessage.classList.add("user-message");
 
+    const messagePara = document.createElement("p");
+
+    messagePara.textContent = input;
+
     userMessage.innerHTML = `
       <div class="user-bubble">
-        <p>${input}</p>
       </div>
       <div class="user-icon"></div>
     `;
@@ -110,6 +114,9 @@ function updateChatUI(input){
 
     chatsContainer.appendChild(userMessage);
 
+    const userBubble = userMessage.querySelector(".user-bubble")
+
+    userBubble.appendChild(messagePara)
 
     textarea.value = "";
 
@@ -118,9 +125,13 @@ function updateChatUI(input){
 }
 
 function updateRutaUI(headingAndIntroObj){
-const rutaMessage = document.createElement("article");
+    const rutaMessage = document.createElement("article");
 
-    rutaMessage.classList.add("ruta-message");
+    const d = Date.now()
+
+    rutaMessage.id = d
+
+    lastRutaMessageId = d
 
     rutaMessage.innerHTML = `
       <img src="./ruta-logo.svg" alt="">
@@ -156,6 +167,23 @@ const rutaMessage = document.createElement("article");
     chatsContainer.scrollTop = chatsContainer.scrollHeight;
 }
 
+function updateRutaUIWithError(errorMessage){
+    const rutaMessage = document.createElement("article");
+
+    rutaMessage.innerHTML = `
+      <img src="./ruta-logo.svg" alt="">
+
+    <div class="ruta-bubble">
+    <p class="error">${errorMessage}</p>
+
+      </div>
+    `;
+
+    chatsContainer.appendChild(rutaMessage);
+
+    chatsContainer.scrollTop = chatsContainer.scrollHeight;
+}
+
 function showStopButton(){
     sendIcon.style.display = "none"
     stopIcon.style.display = "initial"
@@ -166,74 +194,76 @@ function hideStopButton(){
     sendIcon.style.display = "initial"
 }
 
-function toggleTimelineLoader(){
-    timelineLoader.classList.toggle("hidden")
+function showTimelineLoader(){
+        timelineContainer.innerHTML = ""; // Clear existing content
+        const timelineLoaderElement = document.createElement("div")
+        timelineLoaderElement.classList.add("timeline-loader")
+        timelineLoaderElement.innerHTML = `
+        <div class="spinner"></div>
+        <p>Loading Timeline...</p>
+        `
+        timelineContainer.appendChild(timelineLoaderElement)
 }
 
 function showTimelineError(){
-    timelineError.classList.remove("hidden")
-    isLoading = false
-    isError = true
-}
-
-function hideTimelineError(){
-    if(timelineError.classList.contains("hidden")){
-        return
-    }
-    timelineError.classList.add("hidden")
-    isError = false
+        timelineContainer.innerHTML = ""; // Clear existing content
+        const timelineErrorElement = document.createElement("div")
+        timelineErrorElement.classList.add("timeline-error")
+        timelineErrorElement.innerHTML = `
+        <h2>Timeline Error</h2>
+        <p>Oops , Seems like an error while we tried to fetch your timeline. Please try again</p>
+        `
+        timelineContainer.appendChild(timelineErrorElement)
+        timelineHeader.innerHTML = `Timeline Generation Error`
+        isLoading = false
+        isError = true
 }
 
 function createAndRenderTimeline(timelineArray = []) {
+    timelineContainer.innerHTML = ""; // Clear existing content
     timelineArray.forEach(item => {
-      const timelineItem = document.createElement("article");
-      timelineItem.classList.add("single-timeline-info");
-  
-      // Build resources HTML separately
-      let resourcesHTML = "";
-      if (item.resources && item.resources.length > 0) {
-        resourcesHTML += `<h3>RESOURCES</h3>`;
-        resourcesHTML += item.resources
-          .map(resource => {
-            const icon =
-              resource.type === "video"
-                ? "./yt-icon.svg"
-                : "./internet-icon.svg";
-            return `
-              <div class="single-resource">
-                <img src="${icon}" alt="icon"> 
-                <a target="_blank" href="${resource.url}">${resource.title}</a>
-              </div>
-            `;
-          })
-          .join("");
-      }
-  
-      // Full HTML for the timeline item
-      timelineItem.innerHTML = `
-        <div style="background-color:${item.emojiDominantColor}; border:1px solid ${item.emojiDominantDarkerColor};" class="circle">${item.emoji}</div>
-  
-        <article>
-          <header>
-            <p class="date">${item.day} - <span>${item.date_range}</span></p>
-            <h1>${item.title}</h1>
-          </header>
-  
-          <hr>
-  
-          <p class="intro">${item.description}</p>
-  
-          <hr>
-  
-          ${resourcesHTML}
-        </article>
-      `;
-  
-      timelineContainer.appendChild(timelineItem);
+        const timelineItem = document.createElement("article");
+        timelineItem.classList.add("single-timeline-info");
+
+        // Build resources HTML separately
+        let resourcesHTML = "";
+        if (item.resources && item.resources.length > 0) {
+            resourcesHTML += `<h3>RESOURCES</h3>`;
+            resourcesHTML += item.resources
+                .map(resource => {
+                    const icon =
+                        resource.type === "video"
+                            ? "./yt-icon.svg"
+                            : "./internet-icon.svg";
+                    return `
+                        <div class="single-resource">
+                            <img src="${icon}" alt="icon"> 
+                            <a target="_blank" href="${resource.url}">${resource.title}</a>
+                        </div>
+                    `;
+                })
+                .join("");
+        }
+
+        // Full HTML for the timeline item
+        timelineItem.innerHTML = `
+            <div style="background-color:${item.emojiDominantColor}; border:1px solid ${item.emojiDominantDarkerColor};" class="circle">${item.emoji}</div>
+            <article>
+                <header>
+                    <p class="date">${item.day} - <span>${item.date_range}</span></p>
+                    <h1>${item.title}</h1>
+                </header>
+                <hr>
+                <p class="intro">${item.description}</p>
+                <hr>
+                ${resourcesHTML}
+            </article>
+        `;
+
+        timelineContainer.appendChild(timelineItem);
     });
 }
   
-
 function hideWelcomeMessages(){
     welcomeMessage.style.display = "none"
     testSkillsContainer.style.display = "none"
@@ -266,13 +296,18 @@ function testSkillsHandler(text){
 
 async function makeFetchRequest(userRequest){
     timelineHeader.innerHTML = `<div class="fake-h1"></div>`
+    timelineContainer.innerHTML = ""; // Clear existing content
     isGenerating = true
     isLoading = true
     showStopButton()
-    toggleTimelineLoader()
-    hideTimelineError()
+    showTimelineLoader()
+    const lastRutaMessage = document.getElementById(lastRutaMessageId)
         try{
            const introObj =  await getHeadingAndIntroText(userRequest)
+
+           if (!introObj || !introObj.title || !introObj.intro) {
+            throw new Error("Invalid intro object received");
+            }
 
            updateRutaUI(introObj)
 
@@ -304,6 +339,12 @@ async function makeFetchRequest(userRequest){
             createAndRenderTimeline(responseInJson.timeline)
 
             enableHeaderButtons()
+
+            lastRutaMessage.querySelector(".ruta-status .status p").innerText = "Finished Generating Timeline & Roadmap"
+
+            const dot = lastRutaMessage.querySelector(".status .dot")
+
+            dot.classList.add("done")
             
             generatedData = responseInJson.timeline
             
@@ -311,6 +352,11 @@ async function makeFetchRequest(userRequest){
         catch(error){
             showTimelineError()
             disableHeaderButtons()
+            lastRutaMessage.querySelector(".ruta-status .status p").innerText = "Error Generating Timeline & Roadmap"
+
+            const dot = lastRutaMessage.querySelector(".status .dot")
+
+            dot.classList.add("error")
             isError = true
             if (error.name === 'AbortError') {
                 console.log('Fetch aborted');
@@ -320,7 +366,6 @@ async function makeFetchRequest(userRequest){
         }
         finally{
             hideStopButton()
-            toggleTimelineLoader()
             isGenerating = false
             isLoading=false
         }
@@ -337,7 +382,7 @@ async function getHeadingAndIntroText(userRequest){
         })
 
         if(!response.ok) {
-            return new Error("Heading Error")
+            throw new Error("Seems like an error occurred while trying to generate your timeline. Please try again")
         }
 
         const responseInJson = await response.json()
@@ -345,7 +390,7 @@ async function getHeadingAndIntroText(userRequest){
         return responseInJson
     }
     catch(err){
-        console.log(err)
+        updateRutaUIWithError(err.message)
     }
 }
 

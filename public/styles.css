@@ -24,6 +24,11 @@ button{
     cursor: pointer;
 }
 
+p.error{
+    font-weight: 900;
+    color: rgb(88, 6, 6);
+}
+
 .toast{
     position: absolute;
     bottom:1rem;
@@ -249,6 +254,30 @@ body > header .header-inner{
    -moz-border-radius: 50%;
    -ms-border-radius: 50%;
    -o-border-radius: 50%;
+}
+
+.ruta-status .status .dot.done{
+    width:.5rem;
+    box-shadow: 0rem 0rem 0rem .2rem rgba(0, 128, 0, 0.342);
+    aspect-ratio: 1/1;
+    background-color: hsl(120, 56%, 66%);
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+}
+
+.ruta-status .status .dot.done{
+    width:.5rem;
+    box-shadow: 0rem 0rem 0rem .2rem rgba(231, 79, 79, 0.541);
+    aspect-ratio: 1/1;
+    background-color: hsl(0, 95%, 31%);
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
 }
 
 .chat-inner .chat-input{
