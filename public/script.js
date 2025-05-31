@@ -300,16 +300,18 @@ async function makeFetchRequest(userRequest){
     isGenerating = true
     isLoading = true
     showStopButton()
+    let lastRutaMessage;
     showTimelineLoader()
-    const lastRutaMessage = document.getElementById(lastRutaMessageId)
-        try{
-           const introObj =  await getHeadingAndIntroText(userRequest)
-
-           if (!introObj || !introObj.title || !introObj.intro) {
+    try{
+        const introObj =  await getHeadingAndIntroText(userRequest)
+        
+        if (!introObj || !introObj.title || !introObj.intro) {
             throw new Error("Invalid intro object received");
-            }
+        }
+        
+        updateRutaUI(introObj)
 
-           updateRutaUI(introObj)
+        lastRutaMessage = document.getElementById(lastRutaMessageId)
 
            timelineHeader.innerHTML = introObj.title
 
@@ -350,6 +352,7 @@ async function makeFetchRequest(userRequest){
             
         }
         catch(error){
+            console.log(error)
             showTimelineError()
             disableHeaderButtons()
             lastRutaMessage.querySelector(".ruta-status .status p").innerText = "Error Generating Timeline & Roadmap"
@@ -368,6 +371,7 @@ async function makeFetchRequest(userRequest){
             hideStopButton()
             isGenerating = false
             isLoading=false
+            lastRutaMessageId=""
         }
 }
 
