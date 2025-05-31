@@ -101,6 +101,7 @@ p.error{
 body > header{
     height:5.5rem;
     background-color: var(--white);
+    box-shadow: 0 0 2rem .2rem rgba(0, 0, 0, 0.055);
 }
 
 main{
@@ -116,6 +117,22 @@ body > header .header-inner{
     padding: 1rem 0;
     margin: auto;
     max-width: 150rem;
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-inner .attribution a{
+    display: flex;
+    column-gap: .4rem;
+    font-size: 1.4rem;
+    text-decoration: none;
+    color: inherit;
+    font-weight: 600;
+}
+
+.header-inner .attribution img{
+    width:4rem;
 }
 
 .logo-container{
