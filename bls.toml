@@ -20,14 +20,9 @@ command = "npm run build:release"
 [[deployments]]
 name = "blessnet"
 description = ""
-cid = "bafybeieah4h5sr5aocgjyp2m6est6dpfbxrzprdxpxaws6qqacgcdrmco4"
-created = "2025-05-31T02:42:16.400Z"
+cid = "bafybeibs775k36rxx4nqbjrweqq4qvnof77sykzlz3h77tehacyheuod44"
+created = "2025-05-31T16:28:01.418Z"
 
   [deployments.runtime]
   url = "blessnet.tar.gz"
-  checksum = "a01b5df844bc9fdbc01fc264fe0a55c84db7188d6ed4aa1a6c52e699c2a603b1"
-
-[deployment]
-permission = "public"
-nodes = 1
-permissions = [ "https://ruta.up.railway.app/" ]
+  checksum = "793c4093f678bf24c0acbaa92b23366575b4e5e5d135c1002dad1cf36ed4f877"
