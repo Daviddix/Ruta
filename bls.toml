@@ -6,6 +6,7 @@ production_host = "silver-donkey-gertrudis-u7lvotea.bls.dev"
 [deployment]
 permission = "public"
 nodes = 1
+permissions = [ "https://ruta.up.railway.app" ]
 
 [build]
 dir = "build"
@@ -20,9 +21,9 @@ command = "npm run build:release"
 [[deployments]]
 name = "blessnet"
 description = ""
-cid = "bafybeidobmrdrmoxwwsmvfsm4rskxc23ijiljgocwbigg3wd2mryqd3zmm"
-created = "2025-05-31T18:38:06.972Z"
+cid = "bafybeigh2lhapwlr6zveufnjoly5fkrajr4gfpaws5ffrmnpdnduwk2lfi"
+created = "2025-05-31T19:16:16.550Z"
 
   [deployments.runtime]
   url = "blessnet.tar.gz"
-  checksum = "075807b756564c329cf753d96844482794d4e245e86c8751ba721cc07292427b"
+  checksum = "70fc93ced3deaca50b7d40164c854163ed7493ff4802e6b233957702367990d5"
