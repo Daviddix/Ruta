@@ -508,6 +508,11 @@ body > header .header-inner{
     pointer-events: none;
 }
 
+.timeline-top-inner.disabled .down{
+    opacity: 1 !important;
+    pointer-events: all !important;
+}
+
 .timeline-content .timeline-content-inner{
     width:90%;
     max-width:60rem;
