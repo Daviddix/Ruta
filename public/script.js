@@ -56,9 +56,93 @@ async function checkAuthStatus() {
     }
 }
 
+async function checkQueryParamRoadmap() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const roadmapId = urlParams.get('id');
+    if (!roadmapId) return;
+
+    // Show loading skeleton on timeline
+    timelineHeader.innerHTML = `<div class="fake-h1"></div>`;
+    timelineContainer.innerHTML = "";
+    timelineOnMobile.classList.remove("hidden");
+    showTimelineLoader();
+    hideWelcomeMessages();
+
+    // Add User welcome bubble in chat
+    const userMessage = document.createElement("article");
+    userMessage.classList.add("user-message");
+    userMessage.innerHTML = `
+      <div class="user-bubble">
+        <p>Load saved roadmap</p>
+      </div>
+      <div class="user-icon"></div>
+    `;
+    chatsContainer.appendChild(userMessage);
+
+    try {
+        const response = await fetch(`${BASEURL}/api/roadmaps/${roadmapId}`, {
+            method: "GET"
+        });
+
+        if (!response.ok) {
+            throw new Error("Roadmap not found");
+        }
+
+        const roadmapData = await response.json();
+
+        // Render timeline
+        timelineHeader.innerHTML = roadmapData.title;
+        roadmapTitle = roadmapData.title;
+        generatedData = roadmapData.timeline;
+        exportType = "Timeline";
+
+        createAndRenderTimeline(roadmapData.timeline);
+        enableHeaderButtons();
+
+        // Add Ruta loaded bubble in chat
+        const rutaMessage = document.createElement("article");
+        rutaMessage.classList.add("ruta-message");
+        rutaMessage.innerHTML = `
+          <img src="./ruta-logo.svg" alt="">
+          <div class="ruta-bubble">
+            <p>Here is your personalized roadmap for <strong>${roadmapData.title}</strong>. You can navigate between the Timeline View and Roadmap View or export it as a PDF.</p>
+            <div class="ruta-status">
+              <div class="top">
+                <p>${roadmapData.title}</p>
+              </div>
+              <div class="status">
+                <div class="dot done"></div>
+                <p>Roadmap Loaded Successfully</p>
+              </div>
+            </div>
+          </div>
+        `;
+        chatsContainer.appendChild(rutaMessage);
+        chatsContainer.scrollTop = chatsContainer.scrollHeight;
+
+    } catch (err) {
+        console.error("Failed to load query-param roadmap:", err);
+        showTimelineError();
+        disableHeaderButtons();
+        
+        // Add Ruta error bubble in chat
+        const rutaMessage = document.createElement("article");
+        rutaMessage.classList.add("ruta-message");
+        rutaMessage.innerHTML = `
+          <img src="./ruta-logo.svg" alt="">
+          <div class="ruta-bubble">
+            <p class="error">Failed to load the requested roadmap. It may have been deleted or the link is invalid.</p>
+          </div>
+        `;
+        chatsContainer.appendChild(rutaMessage);
+        chatsContainer.scrollTop = chatsContainer.scrollHeight;
+    }
+}
+
 // Call checkAuthStatus on page load
 document.addEventListener("DOMContentLoaded", () => {
     checkAuthStatus();
+    checkQueryParamRoadmap();
     
     if (logoutBtn) {
         logoutBtn.addEventListener("click", () => {

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const { MONGODB_URI, MONGODB_DB } = process.env;
+const { MONGODB_URI } = process.env;
 
 export async function connectToDatabase() {
   if (!MONGODB_URI) {
@@ -21,7 +21,7 @@ export async function connectToDatabase() {
     console.log(`Attempting to fall back to local database: ${localURI}`);
     try {
       await mongoose.connect(localURI, {
-        serverSelectionTimeoutMS: 3000
+        serverSelectionTimeoutMS: 3000 
       });
       console.log("Connected to local database successfully!");
     } catch (localErr) {

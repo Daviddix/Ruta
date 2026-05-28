@@ -926,3 +926,30 @@ body > header .header-inner{
     border-color: #c1271f;
     background-color: rgba(193, 39, 31, 0.05);
 }
+
+.user-avatar-link {
+    text-decoration: none;
+    transition: transform 0.2s ease;
+    display: block;
+}
+
+.user-avatar-link:hover {
+    transform: scale(1.08);
+}
+
+.user-profile .dashboard-link {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    text-decoration: none;
+    padding: 0.4rem 1.2rem;
+    border: 1px solid var(--primary-color);
+    border-radius: 0.4rem;
+    transition: all 0.2s ease;
+}
+
+.user-profile .dashboard-link:hover {
+    background-color: var(--primary-color);
+    color: var(--white);
+    box-shadow: 0 2px 6px rgba(144, 66, 241, 0.15);
+}
