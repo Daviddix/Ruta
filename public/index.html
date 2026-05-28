@@ -21,13 +21,22 @@
         <h1>Ruta</h1>
       </div>
 
-      <div class="attribution">
-        <a href="https://bless.network/" target="_blank" rel="noopener noreferrer">
+      <div class="header-right">
+        <div class="attribution">
+          <a href="https://bless.network/" target="_blank" rel="noopener noreferrer">
+            <p>Powered by</p>
+            <img src="./bless-network-logo.svg" alt="">
+          </a>
+        </div>
 
-          <p>Powered by</p>
-          <img src="./bless-network-logo.svg" alt="">
-
-        </a>
+        <div class="user-menu" id="userMenu">
+          <a href="./login.html" class="auth-link" id="loginLink">Log In</a>
+          <div class="user-profile hidden" id="userProfile">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <span class="user-name" id="userNameDisplay"></span>
+            <button class="logout-btn" id="logoutBtn">Log Out</button>
+          </div>
+        </div>
       </div>
     </div>
   </header>

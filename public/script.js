@@ -20,7 +20,53 @@ const roadmapToggleButton = document.querySelector(".views > button.roadmap-togg
 const exportButton = document.querySelector(".export-btn")
 const toast = document.querySelector(".toast")
 const timelineInnerHeader = document.querySelector(".timeline-top-inner")
-const BASEURL = "https://ruta.up.railway.app"
+const BASEURL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" 
+    ? "http://localhost:3000" 
+    : "https://ruta.up.railway.app";
+
+const loginLink = document.getElementById("loginLink");
+const userProfile = document.getElementById("userProfile");
+const userAvatar = document.getElementById("userAvatar");
+const userNameDisplay = document.getElementById("userNameDisplay");
+const logoutBtn = document.getElementById("logoutBtn");
+
+async function checkAuthStatus() {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+        const response = await fetch(`${BASEURL}/api/auth/me`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const userData = await response.json();
+            if (loginLink) loginLink.style.display = "none";
+            if (userProfile) userProfile.classList.remove("hidden");
+            if (userNameDisplay) userNameDisplay.textContent = userData.name;
+            if (userAvatar) userAvatar.textContent = userData.name.charAt(0).toUpperCase();
+        } else {
+            localStorage.removeItem("token");
+        }
+    } catch (err) {
+        console.error("Auth status verification failed:", err);
+    }
+}
+
+// Call checkAuthStatus on page load
+document.addEventListener("DOMContentLoaded", () => {
+    checkAuthStatus();
+    
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            localStorage.removeItem("token");
+            window.location.reload();
+        });
+    }
+});
 let isGenerating = false
 let isLoading = false
 let isError = false
@@ -333,14 +379,20 @@ async function makeFetchRequest(userRequest){
             userRequest
            }
 
-            const response = await fetch(`${BASEURL}/generate`, {
-                body : JSON.stringify(fetchPayload),
-                signal: abortController.signal,
-                method : "POST",
-                headers : {
-                    "Content-Type" : "application/json"
-                }
-            })
+           const headers = {
+               "Content-Type" : "application/json"
+           };
+           const token = localStorage.getItem("token");
+           if (token) {
+               headers["Authorization"] = `Bearer ${token}`;
+           }
+
+           const response = await fetch(`${BASEURL}/generate`, {
+               body : JSON.stringify(fetchPayload),
+               signal: abortController.signal,
+               method : "POST",
+               headers
+           })
 
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -415,14 +467,20 @@ async function refetch(userRequest){
             userRequest
            }
 
-            const response = await fetch(`${BASEURL}/generate`, {
-                body : JSON.stringify(fetchPayload),
-                signal: abortController.signal,
-                method : "POST",
-                headers : {
-                    "Content-Type" : "application/json"
-                }
-            })
+           const refetchHeaders = {
+               "Content-Type" : "application/json"
+           };
+           const refetchToken = localStorage.getItem("token");
+           if (refetchToken) {
+               refetchHeaders["Authorization"] = `Bearer ${refetchToken}`;
+           }
+
+           const response = await fetch(`${BASEURL}/generate`, {
+               body : JSON.stringify(fetchPayload),
+               signal: abortController.signal,
+               method : "POST",
+               headers: refetchHeaders
+           })
 
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -471,12 +529,17 @@ async function refetch(userRequest){
 
 async function getHeadingAndIntroText(userRequest){
     try{
+        const introHeaders = {
+            "Content-Type" : "application/json"
+        };
+        const introToken = localStorage.getItem("token");
+        if (introToken) {
+            introHeaders["Authorization"] = `Bearer ${introToken}`;
+        }
         const response = await fetch(`${BASEURL}/get-intro-text`, {
             body : JSON.stringify({userRequest}),
             method : "POST",
-            headers : {
-                "Content-Type" : "application/json"
-            }
+            headers : introHeaders
         })
 
         if(!response.ok) {
@@ -494,12 +557,17 @@ async function getHeadingAndIntroText(userRequest){
 
 async function getHeadingAndIntroTextRetry(userRequest){
     try{
+        const retryHeaders = {
+            "Content-Type" : "application/json"
+        };
+        const retryToken = localStorage.getItem("token");
+        if (retryToken) {
+            retryHeaders["Authorization"] = `Bearer ${retryToken}`;
+        }
         const response = await fetch(`${BASEURL}/get-intro-text`, {
             body : JSON.stringify({userRequest}),
             method : "POST",
-            headers : {
-                "Content-Type" : "application/json"
-            }
+            headers : retryHeaders
         })
 
         if(!response.ok) {

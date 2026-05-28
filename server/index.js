@@ -4,7 +4,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 import dotenv from "dotenv";
 import cors from "cors"; // Import the cors middleware
+import jwt from "jsonwebtoken";
 import { extractJSON, makeExternalFunctionCall } from "./lib/helper.js";
+import { connectToDatabase } from "./lib/db.js";
+import authRoutes from "./routes/auth.js";
+import roadmapRoutes from "./routes/roadmaps.js";
 
 dotenv.config();
 
@@ -12,6 +16,10 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 app.use(cors()); // Enable CORS for all routes (or configure for specific origins)
 app.use(express.json()); // Enable parsing of JSON request bodies (if needed)
+
+// API Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/roadmaps", roadmapRoutes);
 
 app.post("/get-intro-text", async (req, res) => {
   const { userRequest } = req.body;
@@ -64,6 +72,20 @@ app.post("/get-intro-text", async (req, res) => {
 
 app.post("/generate", async (req, res) => {
   const { userRequest, todaysDate, titleOfRoadmap } = req.body;
+
+  // Optional Authentication for Auto-Saving
+  const authHeader = req.header('Authorization');
+  let userId = null;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'ruta_secret_key');
+      userId = decoded.id;
+    } catch (err) {
+      console.log("Optional auth verification failed during /generate:", err.message);
+    }
+  }
+
   try {
     const config = {
       responseMimeType: "application/json",
@@ -252,6 +274,24 @@ Avoid generic repetition — keep the roadmap visually engaging and emotionally 
         day.resources = foundResource.resources
       }))
 
+    // Auto-save roadmap if user is authenticated
+    if (userId) {
+      try {
+        const Roadmap = (await import("./models/Roadmap.js")).default;
+        const autoSavedRoadmap = new Roadmap({
+          userId,
+          title: parsedResponse.goal || titleOfRoadmap,
+          goal: userRequest,
+          timeline: parsedResponse.timeline,
+        });
+        const savedDoc = await autoSavedRoadmap.save();
+        parsedResponse._id = savedDoc._id; // Include the saved database ID
+        console.log("Auto-saved newly generated roadmap for user:", userId);
+      } catch (saveErr) {
+        console.error("Error auto-saving roadmap:", saveErr);
+      }
+    }
+
     res.status(200).json(parsedResponse);
   } catch (err) {
     console.error(err);
@@ -267,6 +307,15 @@ app.get("/test", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log("I am alive");
+async function startServer() {
+  await connectToDatabase();
+
+  app.listen(PORT, () => {
+    console.log("I am alive");
+  });
+}
+
+startServer().catch((err) => {
+  console.error("Failed to start server:", err);
+  process.exit(1);
 });
