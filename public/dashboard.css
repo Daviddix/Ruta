@@ -553,3 +553,40 @@ body {
         display: none;
     }
 }
+
+/* Globe and Lock Icon Visibility Switch Styles */
+.btn-icon.visibility {
+    color: rgba(25, 4, 50, 0.4);
+}
+
+.btn-icon.visibility.public {
+    color: var(--primary-color);
+    background-color: rgba(144, 66, 241, 0.06);
+    border-color: rgba(144, 66, 241, 0.3);
+}
+
+.btn-icon.visibility:hover {
+    color: var(--primary-color);
+    background-color: rgba(144, 66, 241, 0.08);
+}
+
+/* Explore community cards metadata */
+.card-top .author-badge {
+    margin-top: 0.6rem;
+    font-size: 1.1rem;
+    color: rgba(25, 4, 50, 0.6);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.card-top .author-badge span {
+    color: var(--primary-color);
+}
+
+.btn-icon.fork:hover {
+    color: #2e7d32;
+    background-color: rgba(46, 125, 50, 0.06);
+    border-color: rgba(46, 125, 50, 0.3);
+}

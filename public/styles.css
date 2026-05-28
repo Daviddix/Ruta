@@ -953,3 +953,29 @@ body > header .header-inner{
     color: var(--white);
     box-shadow: 0 2px 6px rgba(144, 66, 241, 0.15);
 }
+
+/* Header Fork button styles */
+.timeline-top-inner button.fork-btn {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem 0.2rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2e7d32;
+    border-color: rgba(46, 125, 50, 0.3);
+}
+
+.timeline-top-inner button.fork-btn:hover {
+    background-color: rgba(46, 125, 50, 0.05);
+    border-color: rgba(46, 125, 50, 0.5);
+    color: #1b5e20;
+}
+
+.timeline-top-inner button.fork-btn.hidden {
+    display: none !important;
+}
+
+.timeline-top-inner button.fork-btn.show-fork {
+    display: inline-flex !important;
+}

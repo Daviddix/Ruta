@@ -44,6 +44,7 @@ async function checkAuthStatus() {
 
         if (response.ok) {
             const userData = await response.json();
+            currentUserId = userData._id || userData.id || "";
             if (loginLink) loginLink.style.display = "none";
             if (userProfile) userProfile.classList.remove("hidden");
             if (userNameDisplay) userNameDisplay.textContent = userData.name;
@@ -89,6 +90,27 @@ async function checkQueryParamRoadmap() {
         }
 
         const roadmapData = await response.json();
+
+        // Update state tracking
+        loadedRoadmapId = roadmapData._id || "";
+        roadmapOwnerId = roadmapData.userId || "";
+
+        // Toggle Fork Button: show if current user does not own it (or is logged out)
+        const headerForkBtn = document.getElementById("headerForkBtn");
+        if (headerForkBtn) {
+            const hasAuth = !!localStorage.getItem("token");
+            const isOwner = hasAuth && currentUserId && (roadmapOwnerId === currentUserId);
+            if (!isOwner) {
+                headerForkBtn.classList.remove("hidden");
+                headerForkBtn.classList.add("show-fork");
+                
+                // Add fork handler
+                headerForkBtn.onclick = () => handleForkRoadmap(loadedRoadmapId);
+            } else {
+                headerForkBtn.classList.add("hidden");
+                headerForkBtn.classList.remove("show-fork");
+            }
+        }
 
         // Render timeline
         timelineHeader.innerHTML = roadmapData.title;
@@ -151,6 +173,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+let loadedRoadmapId = "";
+let roadmapOwnerId = "";
+let currentUserId = "";
 let isGenerating = false
 let isLoading = false
 let isError = false
@@ -178,7 +203,12 @@ form.addEventListener("submit", (e)=>{
     const userMessage = textarea.value.trim()
     if(!userMessage) return
     updateChatUI(userMessage)
-    makeFetchRequest(userMessage)
+    
+    if (loadedRoadmapId) {
+        makeEditRequest(loadedRoadmapId, userMessage);
+    } else {
+        makeFetchRequest(userMessage);
+    }
     disableHeaderButtons()
 })
 
@@ -484,6 +514,13 @@ async function makeFetchRequest(userRequest){
 
             const responseInJson = await response.json()
 
+            // Update state tracking
+            loadedRoadmapId = responseInJson._id || "";
+            roadmapOwnerId = responseInJson.userId || "";
+
+            const headerForkBtn = document.getElementById("headerForkBtn");
+            if (headerForkBtn) headerForkBtn.classList.add("hidden");
+
             createAndRenderTimeline(responseInJson.timeline)
 
             enableHeaderButtons()
@@ -520,6 +557,122 @@ async function makeFetchRequest(userRequest){
             isGenerating = false
             isLoading=false
         }
+}
+
+async function makeEditRequest(id, editInstruction) {
+    timelineHeader.innerHTML = `<div class="fake-h1"></div>`
+    timelineContainer.innerHTML = ""; // Clear existing content
+    isGenerating = true
+    isLoading = true
+    showStopButton()
+    let lastRutaMessage;
+    showTimelineLoader()
+    
+    // Add adjusting bubble inside chat
+    updateRutaUI({
+        title: roadmapTitle,
+        intro: "Adjusting your timeline with AI... Hang tight!"
+    });
+    lastRutaMessage = document.getElementById(lastRutaMessageId);
+
+    try {
+        const payload = { editInstruction };
+        const headers = {
+            "Content-Type" : "application/json"
+        };
+        const token = localStorage.getItem("token");
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(`${BASEURL}/api/roadmaps/${id}/edit`, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(payload),
+            signal: abortController.signal
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const updatedRoadmap = await response.json();
+
+        // Update state tracking
+        loadedRoadmapId = updatedRoadmap._id;
+        roadmapOwnerId = updatedRoadmap.userId;
+        generatedData = updatedRoadmap.timeline;
+        roadmapTitle = updatedRoadmap.title;
+
+        // Toggle fork button status
+        const headerForkBtn = document.getElementById("headerForkBtn");
+        if (headerForkBtn) {
+            const hasAuth = !!localStorage.getItem("token");
+            const isOwner = hasAuth && currentUserId && (roadmapOwnerId === currentUserId);
+            if (!isOwner) {
+                headerForkBtn.classList.remove("hidden");
+                headerForkBtn.classList.add("show-fork");
+                headerForkBtn.onclick = () => handleForkRoadmap(loadedRoadmapId);
+            } else {
+                headerForkBtn.classList.add("hidden");
+                headerForkBtn.classList.remove("show-fork");
+            }
+        }
+
+        // Render refreshed timeline
+        createAndRenderTimeline(updatedRoadmap.timeline);
+        enableHeaderButtons();
+
+        // Update chat bubble status
+        lastRutaMessage.querySelector(".ruta-status .status p").innerText = "Refined Timeline Successfully";
+        const dot = lastRutaMessage.querySelector(".status .dot");
+        dot.classList.add("done");
+        
+        lastRutaMessageId = "";
+
+    } catch (error) {
+        console.error(error);
+        showTimelineError();
+        disableHeaderButtons();
+        
+        lastRutaMessage.querySelector(".ruta-status .status p").innerText = "Error Refining Timeline";
+        const dot = lastRutaMessage.querySelector(".status .dot");
+        dot.classList.add("error");
+        
+        isError = true;
+    } finally {
+        hideStopButton();
+        isGenerating = false;
+        isLoading = false;
+    }
+}
+
+async function handleForkRoadmap(id) {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("Please log in or create an account to fork and customize roadmaps!");
+        window.location.href = "./login.html";
+        return;
+    }
+
+    try {
+        const response = await fetch(`${BASEURL}/api/roadmaps/${id}/fork`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fork roadmap");
+        }
+
+        alert("Roadmap successfully forked! Redirecting to your dashboard...");
+        window.location.href = "./dashboard.html";
+    } catch (err) {
+        console.error(err);
+        alert("Error forking roadmap. Please try again.");
+    }
 }
 
 async function refetch(userRequest){

@@ -37,6 +37,10 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
           <span>Generate New</span>
         </a>
+        <button class="nav-item" data-tab="explore">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span>Explore Community</span>
+        </button>
         <button class="nav-item" data-tab="account">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           <span>Account Settings</span>
@@ -71,6 +75,26 @@
           <h2>No Roadmaps Found</h2>
           <p>You haven't generated any learning roadmaps yet. Let's create your very first one!</p>
           <a href="./index.html" class="empty-btn">Create Roadmap</a>
+        </div>
+      </div>
+
+      <!-- EXPLORE COMMUNITY TAB -->
+      <div class="tab-panel" id="tab-explore">
+        <header class="content-header">
+          <h1>Explore Community</h1>
+          <p>Discover high-quality learning roadmaps crafted by the community. Fork them to customize and save them under your account.</p>
+        </header>
+
+        <div class="roadmaps-grid" id="exploreGrid">
+          <div class="card-skeleton"></div>
+          <div class="card-skeleton"></div>
+          <div class="card-skeleton"></div>
+        </div>
+
+        <div class="empty-state hidden" id="exploreEmptyState">
+          <img src="./roadmap-icon.svg" alt="No Public Roadmaps">
+          <h2>No Public Roadmaps Yet</h2>
+          <p>No one has published a public roadmap yet. Be the first to share your knowledge with the world!</p>
         </div>
       </div>
 
