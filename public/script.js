@@ -49,6 +49,17 @@ async function checkAuthStatus() {
             if (userProfile) userProfile.classList.remove("hidden");
             if (userNameDisplay) userNameDisplay.textContent = userData.name;
             if (userAvatar) userAvatar.textContent = userData.name.charAt(0).toUpperCase();
+
+            // Prepend Go to Dashboard button in hero container if authenticated
+            const heroActions = document.querySelector(".hero-actions");
+            if (heroActions && !document.getElementById("dashboardCtaBtn")) {
+                const dashBtn = document.createElement("a");
+                dashBtn.id = "dashboardCtaBtn";
+                dashBtn.href = "./dashboard.html";
+                dashBtn.className = "btn-primary";
+                dashBtn.textContent = "Go to Dashboard";
+                heroActions.insertBefore(dashBtn, heroActions.firstChild);
+            }
         } else {
             localStorage.removeItem("token");
         }
@@ -61,6 +72,14 @@ async function checkQueryParamRoadmap() {
     const urlParams = new URLSearchParams(window.location.search);
     const roadmapId = urlParams.get('id');
     if (!roadmapId) return;
+
+    // Immediately bypass landing page UI
+    const landingSection = document.getElementById("landingSection");
+    const appWorkspace = document.getElementById("appWorkspace");
+    const mainViewport = document.querySelector("main");
+    if (landingSection) landingSection.classList.add("hidden");
+    if (appWorkspace) appWorkspace.classList.remove("hidden");
+    if (mainViewport) mainViewport.classList.add("app-active");
 
     // Show loading skeleton on timeline
     timelineHeader.innerHTML = `<div class="fake-h1"></div>`;
@@ -170,6 +189,105 @@ document.addEventListener("DOMContentLoaded", () => {
         logoutBtn.addEventListener("click", () => {
             localStorage.removeItem("token");
             window.location.reload();
+        });
+    }
+
+    // Set up Phase 4 Landing Page Transitions and Handlers
+    const playgroundForm = document.getElementById("playgroundForm");
+    const playgroundInput = document.getElementById("playgroundInput");
+    const landingSection = document.getElementById("landingSection");
+    const appWorkspace = document.getElementById("appWorkspace");
+    const mainViewport = document.querySelector("main");
+
+    if (playgroundForm) {
+        playgroundForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const promptValue = playgroundInput.value.trim();
+            if (!promptValue) return;
+
+            // Copy input value to chatbot input
+            const chatBox = document.getElementById("chat-box");
+            if (chatBox) chatBox.value = promptValue;
+
+            // Trigger smooth transition out
+            landingSection.classList.add("transition-out");
+            appWorkspace.classList.remove("hidden");
+            appWorkspace.classList.add("transition-in");
+            if (mainViewport) mainViewport.classList.add("app-active");
+
+            setTimeout(() => {
+                landingSection.classList.add("hidden");
+                landingSection.classList.remove("transition-out");
+                appWorkspace.classList.remove("transition-in");
+            }, 500);
+
+            // Execute chatbot prompt generation flow
+            updateChatUI(promptValue);
+            makeFetchRequest(promptValue);
+        });
+    }
+
+    // Logo Click-to-Home SPA Transition
+    const logoContainer = document.querySelector(".logo-container");
+    if (logoContainer) {
+        logoContainer.style.cursor = "pointer";
+        logoContainer.addEventListener("click", () => {
+            if (landingSection && landingSection.classList.contains("hidden")) {
+                // Clear URL params without forcing reload
+                if (window.location.search) {
+                    const cleanUrl = window.location.origin + window.location.pathname;
+                    window.history.pushState({}, document.title, cleanUrl);
+                }
+
+                // Reset state variables
+                loadedRoadmapId = "";
+                roadmapOwnerId = "";
+                generatedData = [];
+                roadmapTitle = "";
+
+                // Reset chat panels
+                const chatsContainer = document.querySelector(".chats-container");
+                if (chatsContainer) {
+                    chatsContainer.innerHTML = `
+                        <div class="welcome-message">
+                          <h1>What do you want to learn?</h1>
+                          <p>Use Ruta to generate a structured roadmap & timeline that will help you master any skill</p>
+                        </div>
+                    `;
+                }
+                const welcomeMessage = document.querySelector(".welcome-message");
+                const testSkillsContainer = document.querySelector(".test-skills");
+                if (welcomeMessage) welcomeMessage.style.display = "block";
+                if (testSkillsContainer) testSkillsContainer.style.display = "block";
+
+                // Minimize timeline on mobile view if active
+                const timelineOnMobile = document.querySelector(".timeline");
+                if (timelineOnMobile) timelineOnMobile.classList.add("hidden");
+
+                // Restore landing view
+                appWorkspace.classList.add("hidden");
+                if (mainViewport) mainViewport.classList.remove("app-active");
+                landingSection.classList.remove("hidden");
+
+                if (playgroundInput) {
+                    playgroundInput.value = "";
+                    playgroundInput.focus();
+                }
+            } else {
+                // Smooth scroll to top if already on landing
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+        });
+    }
+
+    // Scroll to Search CTAs
+    const ctaGetStarted = document.getElementById("ctaGetStarted");
+    if (ctaGetStarted) {
+        ctaGetStarted.addEventListener("click", () => {
+            if (playgroundInput) {
+                playgroundInput.scrollIntoView({ behavior: "smooth", block: "center" });
+                setTimeout(() => playgroundInput.focus(), 600);
+            }
         });
     }
 });
@@ -389,6 +507,25 @@ function showTimelineError(){
         isError = true
 }
 
+function checkAndRenderGuestBanner() {
+    const hasToken = !!localStorage.getItem("token");
+    if (!hasToken) {
+        const bannerExists = document.getElementById("guestWarningBanner");
+        if (!bannerExists) {
+            const banner = document.createElement("div");
+            banner.id = "guestWarningBanner";
+            banner.className = "guest-warning-banner";
+            banner.innerHTML = `
+                <span>✨ You are previewing as a guest. <strong><a href="./signup.html">Sign Up</a></strong> or <strong><a href="./login.html">Log In</a></strong> to save this roadmap!</span>
+                <button class="close-banner-btn" onclick="document.getElementById('guestWarningBanner').remove()">&times;</button>
+            `;
+            if (timelineContainer) {
+                timelineContainer.insertBefore(banner, timelineContainer.firstChild);
+            }
+        }
+    }
+}
+
 function createAndRenderTimeline(timelineArray = []) {
     timelineContainer.innerHTML = ""; // Clear existing content
     timelineArray.forEach(item => {
@@ -432,6 +569,7 @@ function createAndRenderTimeline(timelineArray = []) {
 
         timelineContainer.appendChild(timelineItem);
     });
+    checkAndRenderGuestBanner();
 }
   
 function hideWelcomeMessages(){
@@ -440,19 +578,21 @@ function hideWelcomeMessages(){
 }
 
 function createAndRenderNodes(timelineArray=[]){
+    timelineContainer.innerHTML = ""; // Clear loader/content first
     timelineArray.forEach((milestone, index) => {
-  const node = document.createElement("div");
-  node.classList.add("timeline-node");
-  node.id = `node-${index}`;
-  node.innerHTML = `
-        <div class="top">
-              <h1>${milestone.day}</h1>
-            </div>
-
-            <p>${milestone.title}</p>
-  `;
-  timelineContainer.appendChild(node);
-});
+      const node = document.createElement("div");
+      node.classList.add("timeline-node");
+      node.id = `node-${index}`;
+      node.innerHTML = `
+            <div class="top">
+                  <h1>${milestone.day}</h1>
+                </div>
+    
+                <p>${milestone.title}</p>
+      `;
+      timelineContainer.appendChild(node);
+    });
+    checkAndRenderGuestBanner();
 }
 
 //-------------------------------------------

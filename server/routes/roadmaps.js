@@ -84,7 +84,7 @@ router.get('/:id', async (req, res) => {
     }
     res.json(roadmap);
   } catch (err) {
-    console.error('Get roadmap by ID error:', err);
+    console.error('Get roadmap by ID error:', err); 
     if (err.kind === 'ObjectId') {
       return res.status(404).json({ msg: 'Roadmap not found' });
     }
