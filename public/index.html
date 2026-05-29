@@ -54,7 +54,7 @@
       <div class="hero-container">
         <span class="hero-badge">INTRODUCING RUTA AI</span>
         <h1>Master Any Skill.<br>Structured by AI.</h1>
-        <p class="hero-subtitle">Generate structured, milestone-based learning roadmaps complete with curated YouTube tutorials and web articles, in seconds.</p>
+        <p class="hero-subtitle">Generate structured, milestone-based learning roadmaps complete with curated YouTube tutorials, interactive visual workspace editing, and one-click calendar sync.</p>
         
         <!-- Playground Input Card -->
         <div class="playground-card">
@@ -119,6 +119,24 @@
             </div>
             <h3>Community Sharing & Forking</h3>
             <p>Publish roadmaps to the explore gallery. Save, star, or fork public plans into your dashboard to customize privately.</p>
+          </article>
+
+          <!-- Card 5: Interactive Visual Editor -->
+          <article class="feature-card glass-pink">
+            <div class="feature-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 9l-2 2 2 2M9 5l2-2 2 2M15 19l-2 2-2-2M19 9l2 2-2 2M2 12h20M12 2v20"/></svg>
+            </div>
+            <h3>Interactive Visual Editor</h3>
+            <p>Arrange milestones seamlessly using drag-and-drop handles. Double-click any step to edit titles and summaries inline, add YouTube tutorials, or insert milestones at any step.</p>
+          </article>
+
+          <!-- Card 6: Smart Pacing & Calendar Sync -->
+          <article class="feature-card glass-orange">
+            <div class="feature-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>
+            </div>
+            <h3>Smart Pacing & Calendar Sync</h3>
+            <p>Schedule your learning dynamically. Choose a start date and study pacing (Daily, Weekdays only, Alternating) and download a universal `.ics` file to sync with Google, Apple, or Outlook.</p>
           </article>
         </div>
       </div>
@@ -193,6 +211,11 @@
                 <span>Fork</span>
               </button>
     
+              <button class="sync-cal-btn" id="syncCalBtn" title="Sync to Calendar">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span>Sync</span>
+              </button>
+              
               <button class="export-btn">
                 <img src="./export-icon.svg" alt="export-icon.svg">
                 <span>Export</span>
@@ -209,6 +232,78 @@
 
     <div class="toast hidden">
       <img src="./export-icon.svg" alt="export-icon.svg"> <p>Exporting & Downloading Roadmap</p>
+    </div>
+
+    <!-- FLOATING SAVE BAR -->
+    <div class="floating-save-bar hidden" id="floatingSaveBar">
+      <div class="save-bar-inner">
+        <span class="save-bar-msg">You have unsaved changes on this roadmap</span>
+        <div class="save-bar-actions">
+          <button class="btn-reset" id="resetChangesBtn">Reset</button>
+          <button class="btn-save" id="saveChangesBtn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDAR SYNC MODAL -->
+    <div class="calendar-modal-overlay hidden" id="calendarModal">
+      <div class="calendar-modal-card">
+        <div class="calendar-modal-header">
+          <h2>🗓️ Study Scheduler & Sync</h2>
+          <button class="close-modal-btn" id="closeCalendarModalBtn">&times;</button>
+        </div>
+        
+        <div class="calendar-modal-body">
+          <p class="modal-subtitle">Convert your timeline milestones into concrete, actual calendar dates and download a universal sync file.</p>
+          
+          <form class="calendar-config-form" id="calendarForm">
+            <div class="form-row">
+              <div class="modal-input-group">
+                <label>Start Date</label>
+                <input type="date" id="calStartDate" required>
+              </div>
+              <div class="modal-input-group">
+                <label>Daily Study Time</label>
+                <input type="time" id="calStudyTime" value="09:00" required>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="modal-input-group">
+                <label>Study Pacing</label>
+                <select id="calPacing" required>
+                  <option value="daily">📅 Daily (Mon - Sun)</option>
+                  <option value="weekdays">💼 Weekdays Only (Mon - Fri)</option>
+                  <option value="weekends">🛌 Weekends Only (Sat - Sun)</option>
+                  <option value="alternating">🔁 Alternating Days (Mon, Wed, Fri)</option>
+                </select>
+              </div>
+              <div class="modal-input-group">
+                <label>Session Duration</label>
+                <select id="calDuration" required>
+                  <option value="30">30 Minutes</option>
+                  <option value="60" selected>1 Hour</option>
+                  <option value="120">2 Hours</option>
+                  <option value="180">3 Hours</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="schedule-preview-box hidden" id="schedulePreviewBox">
+              <h3>Schedule Pacing Preview</h3>
+              <div class="schedule-preview-list" id="schedulePreviewList"></div>
+            </div>
+
+            <div class="modal-actions">
+              <button type="button" class="btn-modal-calc" id="btnCalcSchedule">Preview Pacing</button>
+              <div class="primary-modal-actions">
+                <button type="button" class="btn-modal-apply" id="btnApplySchedule" disabled>Apply to Roadmap</button>
+                <button type="button" class="btn-modal-download" id="btnDownloadIcal" disabled>Download .ics File</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </main>
   

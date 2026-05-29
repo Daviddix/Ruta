@@ -308,7 +308,7 @@ app.get("/test", async (req, res) => {
 });
 
 async function startServer() {
-  await connectToDatabase();
+  await connectToDatabase(); 
 
   app.listen(PORT, () => {
     console.log("I am alive");

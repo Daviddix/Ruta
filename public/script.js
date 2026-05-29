@@ -302,6 +302,445 @@ let roadmapTitle = ""
 let generatedData = []
 let lastRutaMessageId = ""
 
+let dragSourceIndex = null;
+let originalGeneratedData = null;
+let hasUnsavedChanges = false;
+
+// Floating Save Bar UI Elements
+const floatingSaveBar = document.getElementById("floatingSaveBar");
+const resetChangesBtn = document.getElementById("resetChangesBtn");
+const saveChangesBtn = document.getElementById("saveChangesBtn");
+
+function showFloatingSaveBar() {
+    if (floatingSaveBar) {
+        floatingSaveBar.classList.remove("hidden");
+    }
+}
+
+function hideFloatingSaveBar() {
+    if (floatingSaveBar) {
+        floatingSaveBar.classList.add("hidden");
+    }
+}
+
+// Drag & Drop event handlers
+function handleDragStart(e) {
+    dragSourceIndex = parseInt(this.getAttribute("data-index"));
+    this.classList.add("dragging");
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", dragSourceIndex);
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    e.dataTransfer.dropEffect = "move";
+    return false;
+}
+
+function handleDragEnter(e) {
+    this.classList.add("drag-over");
+}
+
+function handleDragLeave(e) {
+    this.classList.remove("drag-over");
+}
+
+function handleDrop(e) {
+    e.stopPropagation();
+    this.classList.remove("drag-over");
+    const targetIndex = parseInt(this.getAttribute("data-index"));
+    
+    if (dragSourceIndex !== null && dragSourceIndex !== targetIndex) {
+        if (!hasUnsavedChanges) {
+            originalGeneratedData = JSON.parse(JSON.stringify(generatedData));
+        }
+
+        const draggedItem = generatedData.splice(dragSourceIndex, 1)[0];
+        generatedData.splice(targetIndex, 0, draggedItem);
+        
+        hasUnsavedChanges = true;
+        showFloatingSaveBar();
+
+        if (timelineToggleButton.classList.contains("active")) {
+            createAndRenderTimeline(generatedData);
+        } else {
+            createAndRenderNodes(generatedData);
+        }
+    }
+    return false;
+}
+
+function handleDragEnd(e) {
+    this.classList.remove("dragging");
+    const cards = timelineContainer.querySelectorAll(".single-timeline-info");
+    cards.forEach(card => card.classList.remove("drag-over"));
+}
+
+// Visual Editor Actions: Delete & Insert & Inline Edit
+function handleDeleteMilestone(index) {
+    if (confirm("Are you sure you want to delete this milestone?")) {
+        if (!hasUnsavedChanges) {
+            originalGeneratedData = JSON.parse(JSON.stringify(generatedData));
+        }
+
+        generatedData.splice(index, 1);
+        hasUnsavedChanges = true;
+        showFloatingSaveBar();
+
+        if (timelineToggleButton.classList.contains("active")) {
+            createAndRenderTimeline(generatedData);
+        } else {
+            createAndRenderNodes(generatedData);
+        }
+    }
+}
+
+function handleInsertMilestone(index) {
+    if (!hasUnsavedChanges) {
+        originalGeneratedData = JSON.parse(JSON.stringify(generatedData));
+    }
+
+    const newMilestone = {
+        day: `Day 0${generatedData.length + 1}`,
+        date_range: "Custom Duration",
+        title: "New Custom Milestone",
+        description: "Click the edit button to customize this milestone's contents and add resources.",
+        category: "Learn",
+        emoji: "📘",
+        emojiDominantColor: "#2B61D4",
+        emojiDominantDarkerColor: "#1C4091",
+        shouldContainResources: false,
+        resources: []
+    };
+
+    generatedData.splice(index, 0, newMilestone);
+    hasUnsavedChanges = true;
+    showFloatingSaveBar();
+
+    if (timelineToggleButton.classList.contains("active")) {
+        createAndRenderTimeline(generatedData);
+        // Automatically enter edit mode on the newly inserted card
+        const cards = timelineContainer.querySelectorAll(".single-timeline-info");
+        const newCard = cards[index];
+        if (newCard) {
+            enterEditMode(newCard, index);
+        }
+    } else {
+        createAndRenderNodes(generatedData);
+        // Automatically enter edit mode on the newly inserted node
+        const nodes = timelineContainer.querySelectorAll(".timeline-node");
+        const newNode = nodes[index];
+        if (newNode) {
+            enterEditMode(newNode, index);
+        }
+    }
+}
+
+function enterEditMode(cardElement, index) {
+    const item = generatedData[index];
+    
+    // Remove draggable temporarily to avoid text-drag interference
+    cardElement.removeAttribute("draggable");
+    cardElement.classList.add("editing");
+    
+    // Deep copy of resources locally to prevent modifying the state unless saved
+    let localResources = JSON.parse(JSON.stringify(item.resources || []));
+    
+    cardElement.innerHTML = `
+        <form class="card-edit-form" data-index="${index}">
+            <div class="edit-input-group">
+                <label>Day / Step</label>
+                <input type="text" name="day" value="${item.day}" required>
+            </div>
+            <div class="edit-input-group">
+                <label>Date Range / Duration</label>
+                <input type="text" name="date_range" value="${item.date_range}" required>
+            </div>
+            <div class="edit-input-group">
+                <label>Milestone Title</label>
+                <input type="text" name="title" value="${item.title}" required>
+            </div>
+            <div class="edit-input-group">
+                <label>Description</label>
+                <textarea name="description" required>${item.description}</textarea>
+            </div>
+            
+            <!-- Educational Resources Link Manager -->
+            <div class="edit-input-group edit-resources-section">
+                <label>Educational Resources (YouTube / Blogs)</label>
+                <div class="edit-resources-list" id="editResourcesList"></div>
+                
+                <div class="add-resource-row">
+                    <input type="text" id="newResTitle" placeholder="Title (e.g., Guide to UX Writing)">
+                    <input type="url" id="newResUrl" placeholder="URL (e.g., https://youtube.com/...)">
+                    <select id="newResType">
+                        <option value="video">🎥 YouTube Video</option>
+                        <option value="article">📰 Article / Blog</option>
+                    </select>
+                    <button type="button" class="btn-add-resource" id="btnAddResource">Add Link</button>
+                </div>
+            </div>
+            
+            <div class="edit-actions">
+                <button type="button" class="btn-edit-cancel" data-index="${index}">Cancel</button>
+                <button type="submit" class="btn-edit-save">Save</button>
+            </div>
+        </form>
+    `;
+    
+    // Helper function to render resources list locally inside the form
+    function renderLocalResources() {
+        const listContainer = cardElement.querySelector("#editResourcesList");
+        if (!listContainer) return;
+        
+        if (localResources.length === 0) {
+            listContainer.innerHTML = `<p class="no-resources-msg">No educational links added yet.</p>`;
+            return;
+        }
+        
+        listContainer.innerHTML = localResources.map((res, rIdx) => {
+            const iconText = res.type === "video" ? "🎥 Video" : "📰 Link";
+            return `
+                <div class="edit-resource-item">
+                    <span class="res-badge ${res.type}">${iconText}</span>
+                    <div class="res-details">
+                        <span class="res-title">${res.title}</span>
+                        <a href="${res.url}" target="_blank" class="res-url">${res.url}</a>
+                    </div>
+                    <button type="button" class="btn-delete-resource" data-res-index="${rIdx}" title="Remove Resource">&times;</button>
+                </div>
+            `;
+        }).join("");
+        
+        // Wire up delete resource button events
+        listContainer.querySelectorAll(".btn-delete-resource").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const rIdx = parseInt(btn.getAttribute("data-res-index"));
+                localResources.splice(rIdx, 1);
+                renderLocalResources();
+            });
+        });
+    }
+    
+    // Initial render
+    renderLocalResources();
+    
+    // Wire up "Add Link" button event
+    const newResTitleInput = cardElement.querySelector("#newResTitle");
+    const newResUrlInput = cardElement.querySelector("#newResUrl");
+    const newResTypeSelect = cardElement.querySelector("#newResType");
+    const btnAddResource = cardElement.querySelector("#btnAddResource");
+    
+    if (btnAddResource) {
+        btnAddResource.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const title = newResTitleInput.value.trim();
+            const url = newResUrlInput.value.trim();
+            const type = newResTypeSelect.value;
+            
+            if (!title || !url) {
+                alert("Please fill in both the Resource Title and URL.");
+                return;
+            }
+            
+            try {
+                new URL(url);
+            } catch (_) {
+                alert("Please enter a valid URL (starting with http:// or https://).");
+                return;
+            }
+            
+            localResources.push({ title, url, type });
+            newResTitleInput.value = "";
+            newResUrlInput.value = "";
+            renderLocalResources();
+        });
+    }
+    
+    // Wire up cancel button
+    cardElement.querySelector(".btn-edit-cancel").addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (timelineToggleButton.classList.contains("active")) {
+            createAndRenderTimeline(generatedData);
+        } else {
+            createAndRenderNodes(generatedData);
+        }
+    });
+
+    // Wire up save form
+    cardElement.querySelector(".card-edit-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        
+        if (!hasUnsavedChanges) {
+            originalGeneratedData = JSON.parse(JSON.stringify(generatedData));
+        }
+
+        generatedData[index].day = formData.get("day");
+        generatedData[index].date_range = formData.get("date_range");
+        generatedData[index].title = formData.get("title");
+        generatedData[index].description = formData.get("description");
+        
+        // Save the updated resource list!
+        generatedData[index].resources = localResources;
+        generatedData[index].shouldContainResources = localResources.length > 0;
+
+        hasUnsavedChanges = true;
+        showFloatingSaveBar();
+
+        if (timelineToggleButton.classList.contains("active")) {
+            createAndRenderTimeline(generatedData);
+        } else {
+            createAndRenderNodes(generatedData);
+        }
+    });
+}
+
+function setupInteractiveEvents() {
+    const cards = timelineContainer.querySelectorAll(".single-timeline-info");
+    cards.forEach(card => {
+        card.addEventListener("dragstart", handleDragStart);
+        card.addEventListener("dragover", handleDragOver);
+        card.addEventListener("dragenter", handleDragEnter);
+        card.addEventListener("dragleave", handleDragLeave);
+        card.addEventListener("drop", handleDrop);
+        card.addEventListener("dragend", handleDragEnd);
+
+        // Edit button
+        const editBtn = card.querySelector(".btn-edit");
+        if (editBtn) {
+            editBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const idx = parseInt(editBtn.getAttribute("data-index"));
+                enterEditMode(card, idx);
+            });
+        }
+
+        // Delete button
+        const deleteBtn = card.querySelector(".btn-delete");
+        if (deleteBtn) {
+            deleteBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const idx = parseInt(deleteBtn.getAttribute("data-index"));
+                handleDeleteMilestone(idx);
+            });
+        }
+
+        // Double click to edit card
+        card.addEventListener("dblclick", (e) => {
+            if (e.target.closest("button") || e.target.closest("a") || e.target.closest("form") || e.target.closest(".circle") || e.target.closest(".card-action-panel")) {
+                return;
+            }
+            const idx = parseInt(card.getAttribute("data-index"));
+            enterEditMode(card, idx);
+        });
+    });
+
+    // Insert dividers
+    const dividers = timelineContainer.querySelectorAll(".timeline-insert-divider");
+    dividers.forEach(divider => {
+        const insertBtn = divider.querySelector(".insert-btn");
+        if (insertBtn) {
+            insertBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const idx = parseInt(divider.getAttribute("data-index"));
+                handleInsertMilestone(idx);
+            });
+        }
+    });
+}
+
+// Wire up global save and reset buttons
+if (resetChangesBtn) {
+    resetChangesBtn.addEventListener("click", () => {
+        if (originalGeneratedData) {
+            generatedData = JSON.parse(JSON.stringify(originalGeneratedData));
+            hasUnsavedChanges = false;
+            hideFloatingSaveBar();
+            
+            if (timelineToggleButton.classList.contains("active")) {
+                createAndRenderTimeline(generatedData);
+            } else {
+                createAndRenderNodes(generatedData);
+            }
+        }
+    });
+}
+
+if (saveChangesBtn) {
+    saveChangesBtn.addEventListener("click", async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            alert("Please sign up or log in to save your customized roadmap!");
+            window.location.href = "./login.html";
+            return;
+        }
+
+        if (!loadedRoadmapId) {
+            try {
+                // Save new roadmap via POST /api/roadmaps
+                const response = await fetch(`${BASEURL}/api/roadmaps`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        title: roadmapTitle,
+                        goal: roadmapTitle,
+                        timeline: generatedData
+                    })
+                });
+
+                if (response.ok) {
+                    const savedData = await response.json();
+                    loadedRoadmapId = savedData._id;
+                    hasUnsavedChanges = false;
+                    hideFloatingSaveBar();
+                    alert("Roadmap saved successfully to your dashboard!");
+                } else {
+                    const errData = await response.json();
+                    alert(`Error saving roadmap: ${errData.msg || 'Server Error'}`);
+                }
+            } catch (err) {
+                console.error("Failed to save changes:", err);
+                alert("Error saving roadmap. Please try again.");
+            }
+            return;
+        }
+
+        try {
+            // Save updates via PUT /api/roadmaps/:id
+            const response = await fetch(`${BASEURL}/api/roadmaps/${loadedRoadmapId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    title: roadmapTitle,
+                    timeline: generatedData
+                })
+            });
+
+            if (response.ok) {
+                hasUnsavedChanges = false;
+                hideFloatingSaveBar();
+                alert("Changes saved successfully to your dashboard!");
+            } else {
+                const errData = await response.json();
+                alert(`Error saving changes: ${errData.msg || 'Server Error'}`);
+            }
+        } catch (err) {
+            console.error("Failed to save changes:", err);
+            alert("Error saving roadmap. Please try again.");
+        }
+    });
+}
+
 
 //event listeners
 allTestSkillsButtons.forEach((button) => {
@@ -528,9 +967,20 @@ function checkAndRenderGuestBanner() {
 
 function createAndRenderTimeline(timelineArray = []) {
     timelineContainer.innerHTML = ""; // Clear existing content
-    timelineArray.forEach(item => {
+    timelineArray.forEach((item, index) => {
+        // Render insert divider before card (if index > 0)
+        if (index > 0) {
+            const divider = document.createElement("div");
+            divider.className = "timeline-insert-divider";
+            divider.setAttribute("data-index", index);
+            divider.innerHTML = `<button class="insert-btn" title="Add Milestone Here">+</button>`;
+            timelineContainer.appendChild(divider);
+        }
+
         const timelineItem = document.createElement("article");
         timelineItem.classList.add("single-timeline-info");
+        timelineItem.setAttribute("draggable", "true");
+        timelineItem.setAttribute("data-index", index);
 
         // Build resources HTML separately
         let resourcesHTML = "";
@@ -554,7 +1004,15 @@ function createAndRenderTimeline(timelineArray = []) {
 
         // Full HTML for the timeline item
         timelineItem.innerHTML = `
-            <div style="background-color:${item.emojiDominantColor}; border:1px solid ${item.emojiDominantDarkerColor};" class="circle">${item.emoji}</div>
+            <div class="card-action-panel">
+                <button class="card-btn btn-edit" title="Edit Milestone" data-index="${index}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                </button>
+                <button class="card-btn btn-delete" title="Delete Milestone" data-index="${index}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                </button>
+            </div>
+            <div style="background-color:${item.emojiDominantColor || '#2B61D4'}; border:1px solid ${item.emojiDominantDarkerColor || '#1C4091'};" class="circle">${item.emoji || '📘'}</div>
             <article>
                 <header>
                     <p class="date">${item.day} - <span>${item.date_range}</span></p>
@@ -569,6 +1027,8 @@ function createAndRenderTimeline(timelineArray = []) {
 
         timelineContainer.appendChild(timelineItem);
     });
+
+    setupInteractiveEvents();
     checkAndRenderGuestBanner();
 }
   
@@ -578,18 +1038,52 @@ function hideWelcomeMessages(){
 }
 
 function createAndRenderNodes(timelineArray=[]){
-    timelineContainer.innerHTML = ""; // Clear loader/content first
+    timelineContainer.innerHTML = "";
     timelineArray.forEach((milestone, index) => {
       const node = document.createElement("div");
       node.classList.add("timeline-node");
       node.id = `node-${index}`;
       node.innerHTML = `
+            <div class="card-action-panel">
+                <button class="card-btn btn-edit" title="Edit Milestone" data-index="${index}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                </button>
+                <button class="card-btn btn-delete" title="Delete Milestone" data-index="${index}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                </button>
+            </div>
             <div class="top">
                   <h1>${milestone.day}</h1>
                 </div>
     
                 <p>${milestone.title}</p>
       `;
+
+      // Wire up node actions
+      const editBtn = node.querySelector(".btn-edit");
+      if (editBtn) {
+          editBtn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              enterEditMode(node, index);
+          });
+      }
+
+      const deleteBtn = node.querySelector(".btn-delete");
+      if (deleteBtn) {
+          deleteBtn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              handleDeleteMilestone(index);
+          });
+      }
+
+      // Double click to edit node
+      node.addEventListener("dblclick", (e) => {
+          if (e.target.closest("button") || e.target.closest("form") || e.target.closest(".card-action-panel")) {
+              return;
+          }
+          enterEditMode(node, index);
+      });
+
       timelineContainer.appendChild(node);
     });
     checkAndRenderGuestBanner();
@@ -988,4 +1482,275 @@ function disableHeaderButtons(){
 
 function enableHeaderButtons(){
     timelineInnerHeader.classList.remove("disabled")
+}
+
+// =========================================================================
+// STUDY SCHEDULER & CALENDAR SYNC ENGINE (Phase 5)
+// =========================================================================
+
+// State Tracking for calculated calendar dates
+let calculatedDates = [];
+
+// DOM Elements for Calendar Modal
+const calendarModal = document.getElementById("calendarModal");
+const syncCalBtn = document.getElementById("syncCalBtn");
+const closeCalendarModalBtn = document.getElementById("closeCalendarModalBtn");
+const calStartDate = document.getElementById("calStartDate");
+const calStudyTime = document.getElementById("calStudyTime");
+const calPacing = document.getElementById("calPacing");
+const calDuration = document.getElementById("calDuration");
+const btnCalcSchedule = document.getElementById("btnCalcSchedule");
+const btnApplySchedule = document.getElementById("btnApplySchedule");
+const btnDownloadIcal = document.getElementById("btnDownloadIcal");
+const schedulePreviewBox = document.getElementById("schedulePreviewBox");
+const schedulePreviewList = document.getElementById("schedulePreviewList");
+
+// Set default start date to today's date (format YYYY-MM-DD)
+if (calStartDate) {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    calStartDate.value = `${yyyy}-${mm}-${dd}`;
+}
+
+// Modal open/close triggers
+if (syncCalBtn) {
+    syncCalBtn.addEventListener("click", () => {
+        if (!generatedData || generatedData.length === 0) {
+            alert("Please generate or load a roadmap first before scheduling!");
+            return;
+        }
+        calendarModal.classList.remove("hidden");
+    });
+}
+
+function closeCalendarModal() {
+    if (calendarModal) {
+        calendarModal.classList.add("hidden");
+        // Reset preview state
+        schedulePreviewBox.classList.add("hidden");
+        schedulePreviewList.innerHTML = "";
+        btnApplySchedule.disabled = true;
+        btnDownloadIcal.disabled = true;
+        calculatedDates = [];
+    }
+}
+
+if (closeCalendarModalBtn) {
+    closeCalendarModalBtn.addEventListener("click", closeCalendarModal);
+}
+
+if (calendarModal) {
+    calendarModal.addEventListener("click", (e) => {
+        if (e.target === calendarModal) {
+            closeCalendarModal();
+        }
+    });
+}
+
+// Smart Pacing Date Calculator Engine
+function calculateStudyDates(startDateVal, pacingVal, milestonesCount) {
+    const dates = [];
+    let current = new Date(startDateVal + "T00:00:00"); // Ensure local timezone parsing
+
+    for (let i = 0; i < milestonesCount; i++) {
+        // Adjust date depending on pacing rules
+        if (pacingVal === "weekdays") {
+            // If Saturday, move to Monday
+            if (current.getDay() === 6) current.setDate(current.getDate() + 2);
+            // If Sunday, move to Monday
+            else if (current.getDay() === 0) current.setDate(current.getDate() + 1);
+        } else if (pacingVal === "weekends") {
+            // If weekday (Mon-Fri), move to upcoming Saturday
+            const day = current.getDay();
+            if (day >= 1 && day <= 5) {
+                current.setDate(current.getDate() + (6 - day));
+            }
+        } else if (pacingVal === "alternating") {
+            // Alternating Mon, Wed, Fri
+            const day = current.getDay();
+            if (day === 0) { // Sunday -> Mon
+                current.setDate(current.getDate() + 1);
+            } else if (day === 2) { // Tuesday -> Wed
+                current.setDate(current.getDate() + 1);
+            } else if (day === 4) { // Thursday -> Fri
+                current.setDate(current.getDate() + 1);
+            } else if (day === 6) { // Saturday -> Mon
+                current.setDate(current.getDate() + 2);
+            }
+        }
+
+        // Add the cloned calculated date to the list
+        dates.push(new Date(current));
+
+        // Advance current pointer for next iteration
+        if (pacingVal === "weekends") {
+            // In weekends mode: if Saturday, next is Sunday. If Sunday, next is Saturday.
+            if (current.getDay() === 6) {
+                current.setDate(current.getDate() + 1);
+            } else {
+                current.setDate(current.getDate() + 6); // Sunday -> Saturday
+            }
+        } else if (pacingVal === "alternating") {
+            // Alternate pointer step
+            const day = current.getDay();
+            if (day === 1) current.setDate(current.getDate() + 2); // Mon -> Wed
+            else if (day === 3) current.setDate(current.getDate() + 2); // Wed -> Fri
+            else if (day === 5) current.setDate(current.getDate() + 3); // Fri -> Mon
+        } else {
+            // Consecutive Days (daily) or Weekdays (next pointer day)
+            current.setDate(current.getDate() + 1);
+        }
+    }
+
+    return dates;
+}
+
+// Format date nicely (e.g. "Monday, Jun 1st, 2026")
+function formatCalendarDate(dateObj) {
+    const options = { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' };
+    return dateObj.toLocaleDateString('en-US', options);
+}
+
+// Calculate Schedule and Render Pacing Preview
+if (btnCalcSchedule) {
+    btnCalcSchedule.addEventListener("click", () => {
+        const startDateVal = calStartDate.value;
+        const pacingVal = calPacing.value;
+        
+        if (!startDateVal) {
+            alert("Please pick a valid start date.");
+            return;
+        }
+
+        calculatedDates = calculateStudyDates(startDateVal, pacingVal, generatedData.length);
+        
+        // Render Preview list inside modal card
+        schedulePreviewList.innerHTML = generatedData.map((milestone, idx) => {
+            const dateStr = formatCalendarDate(calculatedDates[idx]);
+            return `
+                <div class="preview-item">
+                    <span class="p-day">${milestone.day}</span>
+                    <span class="p-title">${milestone.title}</span>
+                    <span class="p-date">${dateStr}</span>
+                </div>
+            `;
+        }).join("");
+
+        // Show preview container and enable actions
+        schedulePreviewBox.classList.remove("hidden");
+        btnApplySchedule.disabled = false;
+        btnDownloadIcal.disabled = false;
+    });
+}
+
+// Universal ICS (iCalendar) Exporter
+if (btnDownloadIcal) {
+    btnDownloadIcal.addEventListener("click", () => {
+        if (calculatedDates.length === 0) return;
+
+        const timeVal = calStudyTime.value || "09:00";
+        const durationMins = parseInt(calDuration.value) || 60;
+        
+        // Helper to format ISO dates YYYYMMDDTHHMMSS
+        function formatICSDateTime(dateObj, timeStr, offsetMins = 0) {
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const eventDate = new Date(year, dateObj.getMonth(), dateObj.getDate(), hours, minutes);
+            
+            if (offsetMins !== 0) {
+                eventDate.setMinutes(eventDate.getMinutes() + offsetMins);
+            }
+            
+            const y = eventDate.getFullYear();
+            const m = String(eventDate.getMonth() + 1).padStart(2, '0');
+            const d = String(eventDate.getDate()).padStart(2, '0');
+            const hh = String(eventDate.getHours()).padStart(2, '0');
+            const mm = String(eventDate.getMinutes()).padStart(2, '0');
+            
+            return `${y}${m}${d}T${hh}${mm}00`;
+        }
+
+        let icsContent = [
+            "BEGIN:VCALENDAR",
+            "VERSION:2.0",
+            "PRODID:-//Ruta AI//Study Scheduler//EN",
+            "CALSCALE:GREGORIAN",
+            "METHOD:PUBLISH"
+        ];
+
+        generatedData.forEach((milestone, idx) => {
+            const dateObj = calculatedDates[idx];
+            const dtStart = formatICSDateTime(dateObj, timeVal);
+            const dtEnd = formatICSDateTime(dateObj, timeVal, durationMins);
+            const stamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+            
+            // Collect resources links
+            let resourcesStr = "";
+            if (milestone.resources && milestone.resources.length > 0) {
+                resourcesStr = "\\n\\nCurated Resources:\\n" + milestone.resources.map(res => `- ${res.title}: ${res.url}`).join("\\n");
+            }
+
+            const cleanDescription = (milestone.description + resourcesStr).replace(/,/g, "\\,").replace(/\n/g, "\\n");
+            const cleanSummary = `[Ruta AI] ${milestone.day}: ${milestone.title}`.replace(/,/g, "\\,");
+
+            icsContent = icsContent.concat([
+                "BEGIN:VEVENT",
+                `UID:milestone_${idx}_${Date.now()}@ruta.ai`,
+                `DTSTAMP:${stamp}`,
+                `DTSTART:${dtStart}`,
+                `DTEND:${dtEnd}`,
+                `SUMMARY:${cleanSummary}`,
+                `DESCRIPTION:${cleanDescription}`,
+                "END:VEVENT"
+            ]);
+        });
+
+        icsContent.push("END:VCALENDAR");
+
+        const icsString = icsContent.join("\r\n");
+        const blob = new Blob([icsString], { type: "text/calendar;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${roadmapTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_schedule.ics`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    });
+}
+
+// Apply Calculated Schedule to Roadmap Local State
+if (btnApplySchedule) {
+    btnApplySchedule.addEventListener("click", () => {
+        if (calculatedDates.length === 0) return;
+
+        if (!hasUnsavedChanges) {
+            originalGeneratedData = JSON.parse(JSON.stringify(generatedData));
+        }
+
+        generatedData.forEach((milestone, idx) => {
+            const formattedDate = formatCalendarDate(calculatedDates[idx]);
+            generatedData[idx].date_range = formattedDate;
+        });
+
+        hasUnsavedChanges = true;
+        showFloatingSaveBar();
+
+        if (timelineToggleButton.classList.contains("active")) {
+            createAndRenderTimeline(generatedData);
+        } else {
+            createAndRenderNodes(generatedData);
+        }
+
+        // Close modal and alert success
+        closeCalendarModal();
+        alert("Smart schedule successfully applied to your active roadmap timeline!");
+    });
 }
