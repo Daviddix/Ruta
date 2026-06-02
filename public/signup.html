@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="./ruta-logo.svg" type="image/x-icon">
+  <link rel="stylesheet" href="./auth.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap');
+  </style>
+  <title>Ruta | Sign Up</title>
+</head>
+<body>
+  <main class="auth-container">
+    <header class="auth-header">
+      <a href="./index.html">
+        <img src="./ruta-logo.svg" alt="Ruta Logo">
+      </a>
+      <h1>Create Account</h1>
+      <p>Sign up to generate, customize, and save roadmaps</p>
+    </header>
+
+    <div class="error-banner" id="errorBanner"></div>
+
+    <form class="auth-form" id="signupForm">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          placeholder="John Doe" 
+          required 
+          autocomplete="name"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          placeholder="you@example.com" 
+          required 
+          autocomplete="email"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          placeholder="Min. 6 characters" 
+          required 
+          minlength="6"
+          autocomplete="new-password"
+        >
+      </div>
+
+      <button type="submit" class="auth-btn" id="submitBtn">
+        <span class="btn-spinner" id="btnSpinner"></span>
+        <span id="btnText">Register</span>
+      </button>
+    </form>
+
+    <footer class="auth-footer">
+      Already have an account? <a href="./login.html">Sign in here</a>
+    </footer>
+  </main>
+  
+  <script src="./auth.js"></script>
+</body>
+</html>

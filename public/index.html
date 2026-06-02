@@ -21,107 +21,317 @@
         <h1>Ruta</h1>
       </div>
 
-      <div class="attribution">
-        <a href="https://bless.network/" target="_blank" rel="noopener noreferrer">
+      <div class="header-right">
+        <div class="attribution">
+          <a href="https://bless.network/" target="_blank" rel="noopener noreferrer">
+            <p>Powered by</p>
+            <img src="./bless-network-logo.svg" alt="">
+          </a>
+        </div>
 
-          <p>Powered by</p>
-          <img src="./bless-network-logo.svg" alt="">
-
-        </a>
+        <div class="user-menu" id="userMenu">
+          <a href="./login.html" class="auth-link" id="loginLink">Log In</a>
+          <div class="user-profile hidden" id="userProfile">
+            <a href="./dashboard.html" class="user-avatar-link" title="Go to Dashboard">
+              <div class="user-avatar" id="userAvatar">U</div>
+            </a>
+            <span class="user-name" id="userNameDisplay"></span>
+            <a href="./dashboard.html" class="dashboard-link" title="Dashboard">Dashboard</a>
+            <button class="logout-btn" id="logoutBtn">Log Out</button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
 
-  <main>
-    <section class="chat-section">
+  <!-- TOP MESH GLOW BACKDROP -->
+  <div class="mesh-glow" id="landingGlowMesh"></div>
 
-      <div class="chat-inner">
-
-        <div class="chats-container">
-
-          <div class="welcome-message">
-            <h1>What do you want to learn?</h1>
-            <p>Use Ruta to generate a structured roadmap & timeline that will help you master any skill</p>
-          </div>
-  
-        </div>
-
+  <main class="main-viewport">
+    
+    <!-- LANDING HERO PAGE -->
+    <section class="landing-section" id="landingSection">
+      <div class="hero-container">
+        <span class="hero-badge">INTRODUCING RUTA AI</span>
+        <h1>Master Any Skill.<br>Structured by AI.</h1>
+        <p class="hero-subtitle">Generate structured, milestone-based learning roadmaps complete with curated YouTube tutorials, interactive visual workspace editing, and one-click calendar sync.</p>
         
-        <div class="test-skills">
-          <h3>I WANT TO LEARN</h3>
-
-          <div class="all-test-skills">
-
-            <span>UX Writing</span>
-            <span>Web Development</span>
-            <span>How to Cook</span>
-          </div>
+        <!-- Playground Input Card -->
+        <div class="playground-card">
+          <div class="playground-grid-bg"></div>
+          <form class="playground-input-form" id="playgroundForm">
+            <input type="text" id="playgroundInput" placeholder="What do you want to learn today? (e.g. UX Writing, Web Development, Chess...)" required autocomplete="off">
+            <button type="submit" class="playground-btn">
+              <span>Generate</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </form>
         </div>
 
-        <form class="chat-input">
-          <textarea name="chat-box" id="chat-box" placeholder="What do you want to learn?"></textarea>
-
-          <button>
-            <img src="./send-icon.svg" alt="send message" class="send">
-            <img src="./stop.svg" alt="stop message" class="stop">
-          </button>
-        </form>
+        <div class="hero-actions">
+          <a href="#features" class="btn-secondary">Explore Features</a>
+        </div>
       </div>
 
+      <!-- FEATURES SPOTLIGHT SECTION -->
+      <div class="features-section" id="features">
+        <header class="section-header">
+          <h2>Crafted for learners, built for builders</h2>
+          <p>Everything you need to go from zero to hero in any professional or creative discipline.</p>
+        </header>
 
-    </section>
+        <div class="features-grid">
+          <!-- Card 1: Interactive Chat -->
+          <article class="feature-card glass-blue">
+            <div class="feature-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <h3>AI Conversational Adjustments</h3>
+            <p>Modify and refine timelines on the fly. Simply ask Ruta to add milestones, change pacing, or focus on specific tools.</p>
+            <div class="mock-chat-bubble">
+              <span class="mock-user">"Add Figma prototyping"</span>
+              <span class="mock-ruta">"Roadmap updated successfully! 🎨"</span>
+            </div>
+          </article>
 
-    <section class="timeline hidden">
+          <!-- Card 2: Interactive Timelines -->
+          <article class="feature-card glass-purple">
+            <div class="feature-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="5" r="3"/><circle cx="12" cy="19" r="3"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="12" y1="12" x2="19" y2="12"/><circle cx="19" cy="12" r="3"/></svg>
+            </div>
+            <h3>Visual Node Timelines</h3>
+            <p>Toggle between chronological vertical timelines and connected node roadmaps to visualize your learning path.</p>
+          </article>
 
-      <header class="timeline-top">
+          <!-- Card 3: Curated Resources -->
+          <article class="feature-card glass-green">
+            <div class="feature-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+            </div>
+            <h3>Dynamic Web Resources</h3>
+            <p>Bypasses generic text. Ruta aggregates top-tier YouTube tutorials and blog articles for every day of your study plan.</p>
+          </article>
 
-        <div class="timeline-top-inner disabled">
+          <!-- Card 4: Community Explorer & Forking -->
+          <article class="feature-card glass-grey">
+            <div class="feature-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+            </div>
+            <h3>Community Sharing & Forking</h3>
+            <p>Publish roadmaps to the explore gallery. Save, star, or fork public plans into your dashboard to customize privately.</p>
+          </article>
 
-          <button class="down">
-            <img src="./down-icon.svg" alt="down icon">
-          </button>
+          <!-- Card 5: Interactive Visual Editor -->
+          <article class="feature-card glass-pink">
+            <div class="feature-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 9l-2 2 2 2M9 5l2-2 2 2M15 19l-2 2-2-2M19 9l2 2-2 2M2 12h20M12 2v20"/></svg>
+            </div>
+            <h3>Interactive Visual Editor</h3>
+            <p>Arrange milestones seamlessly using drag-and-drop handles. Double-click any step to edit titles and summaries inline, add YouTube tutorials, or insert milestones at any step.</p>
+          </article>
 
-        <h1>Ruta | Your Guide to Learning fast with AI</h1>
-
-
-
-        <div class="views">
-          <button class="timeline-toggle active">
-            <img src="./timeline-icon.svg" alt="timeline">
-            
-            <span>Timeline View</span>
-          </button>
-          
-          <button class="roadmap-toggle">
-            <img src="./roadmap-icon.svg" alt="roadmap-icon.svg">
-
-            <span>Roadmap View</span>
-          </button>
+          <!-- Card 6: Smart Pacing & Calendar Sync -->
+          <article class="feature-card glass-orange">
+            <div class="feature-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>
+            </div>
+            <h3>Smart Pacing & Calendar Sync</h3>
+            <p>Schedule your learning dynamically. Choose a start date and study pacing (Daily, Weekdays only, Alternating) and download a universal `.ics` file to sync with Google, Apple, or Outlook.</p>
+          </article>
         </div>
-
-
-
-        <button class="export-btn">
-          <img src="./export-icon.svg" alt="export-icon.svg">
-
-            <span>Export</span>
-        </button>
-        </div>
-
-        
-      </header>
-
-      <div class="timeline-content" id="timeline-content">
-        <div class="timeline-content-inner" id="timeline-content-inner">
-          
-        </div>
-
       </div>
 
+      <!-- CHANGELOG PREVIEW SECTION -->
+      <section class="changelog-preview" id="changelogPreview">
+        <header class="section-header">
+          <h2>Fresh from the changelog</h2>
+          <p>See what's new in Ruta — highlights from recent updates.</p>
+        </header>
+
+        <div class="changelog-preview-grid">
+          <article class="changelog-preview-card">
+            <div class="changelog-preview-meta">
+              <span class="changelog-pill">Feature</span>
+              <span class="changelog-date">Jun 2, 2026</span>
+            </div>
+            <h3>Security hardening and Gemini model upgrades</h3>
+            <p>Access controls tightened and AI generation moved to the latest model.</p>
+          </article>
+          <article class="changelog-preview-card">
+            <div class="changelog-preview-meta">
+              <span class="changelog-pill">Feature</span>
+              <span class="changelog-date">May 29, 2026</span>
+            </div>
+            <h3>AI roadmap generation with autosave</h3>
+            <p>End-to-end roadmap creation and authenticated saves on every run.</p>
+          </article>
+          <article class="changelog-preview-card">
+            <div class="changelog-preview-meta">
+              <span class="changelog-pill">Fix</span>
+              <span class="changelog-date">May 28, 2026</span>
+            </div>
+            <h3>Roadmap sharing and dashboard polish</h3>
+            <p>Sharing links, dashboard improvements, and smoother navigation.</p>
+          </article>
+        </div>
+
+        <div class="changelog-preview-cta">
+          <a class="changelog-cta-btn" href="./changelog.html">See full changelog</a>
+        </div>
+      </section>
+
+      <!-- FOOTER CALL TO ACTION -->
+      <footer class="landing-footer">
+        <div class="footer-cta">
+          <h2>Ready to master your next skill?</h2>
+          <p>Join thousands of builders, designers, and creators building personalized AI roadmaps today.</p>
+          <button class="footer-cta-btn" id="ctaGetStarted">Start Learning Free</button>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2026 Ruta. Powered by Bless Network. All rights reserved.</p>
+        </div>
+      </footer>
     </section>
+
+    <!-- WORKSPACE PANEL (Hidden on Landing) -->
+    <div class="app-workspace hidden" id="appWorkspace">
+      <div class="workspace-inner">
+        <section class="chat-section">
+          <div class="chat-inner">
+            <div class="chats-container">
+              <div class="welcome-message">
+                <h1>What do you want to learn?</h1>
+                <p>Use Ruta to generate a structured roadmap & timeline that will help you master any skill</p>
+              </div>
+            </div>
+      
+            <div class="test-skills">
+              <h3>I WANT TO LEARN</h3>
+              <div class="all-test-skills">
+                <span>UX Writing</span>
+                <span>Web Development</span>
+                <span>How to Cook</span>
+              </div>
+            </div>
+      
+            <form class="chat-input">
+              <textarea name="chat-box" id="chat-box" placeholder="What do you want to learn?"></textarea>
+              <button>
+                <img src="./send-icon.svg" alt="send message" class="send">
+                <img src="./stop.svg" alt="stop message" class="stop">
+              </button>
+            </form>
+          </div>
+        </section>
+      
+        <section class="timeline hidden">
+          <header class="timeline-top">
+            <div class="timeline-top-inner disabled">
+              <button class="down">
+                <img src="./down-icon.svg" alt="down icon">
+              </button>
+    
+              <h1>Ruta | Your Guide to Learning fast with AI</h1>
+    
+              <div class="views">
+                <button class="timeline-toggle active">
+                  <img src="./timeline-icon.svg" alt="timeline">
+                  <span>Timeline View</span>
+                </button>
+                
+                <button class="roadmap-toggle">
+                  <img src="./roadmap-icon.svg" alt="roadmap-icon.svg">
+                  <span>Roadmap View</span>
+                </button>
+              </div>
+    
+              <button class="fork-btn hidden" id="headerForkBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 4px;"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+                <span>Fork</span>
+              </button>
+    
+              <button class="sync-cal-btn" id="syncCalBtn" title="Sync to Calendar">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span>Sync</span>
+              </button>
+              
+              <button class="export-btn">
+                <img src="./export-icon.svg" alt="export-icon.svg">
+                <span>Export</span>
+              </button>
+            </div>
+          </header>
+    
+          <div class="timeline-content" id="timeline-content">
+            <div class="timeline-content-inner" id="timeline-content-inner"></div>
+          </div>
+        </section>
+      </div>
+    </div>
 
     <div class="toast hidden">
       <img src="./export-icon.svg" alt="export-icon.svg"> <p>Exporting & Downloading Roadmap</p>
+    </div>
+
+    <!-- CALENDAR SYNC MODAL -->
+    <div class="calendar-modal-overlay hidden" id="calendarModal">
+      <div class="calendar-modal-card">
+        <div class="calendar-modal-header">
+          <h2>🗓️ Study Scheduler & Sync</h2>
+          <button class="close-modal-btn" id="closeCalendarModalBtn">&times;</button>
+        </div>
+        
+        <div class="calendar-modal-body">
+          <p class="modal-subtitle">Convert your timeline milestones into concrete, actual calendar dates and download a universal sync file.</p>
+          
+          <form class="calendar-config-form" id="calendarForm">
+            <div class="form-row">
+              <div class="modal-input-group">
+                <label>Start Date</label>
+                <input type="date" id="calStartDate" required>
+              </div>
+              <div class="modal-input-group">
+                <label>Daily Study Time</label>
+                <input type="time" id="calStudyTime" value="09:00" required>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="modal-input-group">
+                <label>Study Pacing</label>
+                <select id="calPacing" required>
+                  <option value="daily">📅 Daily (Mon - Sun)</option>
+                  <option value="weekdays">💼 Weekdays Only (Mon - Fri)</option>
+                  <option value="weekends">🛌 Weekends Only (Sat - Sun)</option>
+                  <option value="alternating">🔁 Alternating Days (Mon, Wed, Fri)</option>
+                </select>
+              </div>
+              <div class="modal-input-group">
+                <label>Session Duration</label>
+                <select id="calDuration" required>
+                  <option value="30">30 Minutes</option>
+                  <option value="60" selected>1 Hour</option>
+                  <option value="120">2 Hours</option>
+                  <option value="180">3 Hours</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="schedule-preview-box hidden" id="schedulePreviewBox">
+              <h3>Schedule Pacing Preview</h3>
+              <div class="schedule-preview-list" id="schedulePreviewList"></div>
+            </div>
+
+            <div class="modal-actions">
+              <button type="button" class="btn-modal-calc" id="btnCalcSchedule">Preview Pacing</button>
+              <div class="primary-modal-actions">
+                <button type="button" class="btn-modal-apply" id="btnApplySchedule" disabled>Apply to Roadmap</button>
+                <button type="button" class="btn-modal-download" id="btnDownloadIcal" disabled>Download .ics File</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </main>
   

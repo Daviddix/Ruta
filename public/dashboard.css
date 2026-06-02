@@ -1,0 +1,592 @@
+:root {
+    --bg-color: #F9F6FE;
+    --white: #ffffff;
+    --darker-white: hsl(0, 0%, 97%);
+    --more-darker-white: hsl(0, 0%, 96%);
+    --primary-color: #9042F1;
+    --primary-darker: #190432;
+    --primary-hover: #7b2fe0;
+    --error-color: #c1271f;
+    --success-color: #2e7d32;
+    --border-color: rgba(0, 0, 0, 0.15);
+    --shadow-subtle: 0 0 2rem .2rem rgba(0, 0, 0, 0.04);
+}
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 62.5%;
+    background-color: var(--bg-color);
+}
+
+body {
+    font-family: "Instrument Sans", Arial, Helvetica, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header styles matching index.html */
+.dashboard-header {
+    height: 5.5rem;
+    background-color: var(--white);
+    box-shadow: var(--shadow-subtle);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.dashboard-header .header-inner {
+    width: 95%;
+    max-width: 150rem;
+    margin: auto;
+    padding: 1rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dashboard-header .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.dashboard-header .logo-container a {
+    display: flex;
+    align-items: center;
+}
+
+.dashboard-header .logo-container img {
+    width: 3rem;
+}
+
+.dashboard-header .logo-container h1 {
+    font-size: 1.8rem;
+    color: var(--primary-darker);
+    font-weight: 700;
+}
+
+.user-badge {
+    width: 3.2rem;
+    height: 3.2rem;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: var(--white);
+    font-size: 1.4rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Layout */
+.dashboard-layout {
+    display: flex;
+    flex: 1;
+    max-width: 150rem;
+    width: 95%;
+    margin: 2rem auto;
+    gap: 3rem;
+}
+
+/* Sidebar Navigation */
+.dashboard-sidebar {
+    width: 26rem;
+    flex-shrink: 0;
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 1.2rem;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100vh - 10rem);
+    position: sticky;
+    top: 7.5rem;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    width: 100%;
+    padding: 1.2rem 1.6rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: rgba(25, 4, 50, 0.7);
+    background: transparent;
+    border: none;
+    border-radius: 0.8rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.nav-item svg {
+    opacity: 0.7;
+}
+
+.nav-item:hover, .nav-item.active {
+    color: var(--primary-color);
+    background-color: rgba(144, 66, 241, 0.06);
+}
+
+.nav-item.active svg {
+    opacity: 1;
+}
+
+.sidebar-logout {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    width: 100%;
+    padding: 1.2rem 1.6rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: rgba(25, 4, 50, 0.5);
+    background: transparent;
+    border: none;
+    border-radius: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sidebar-logout:hover {
+    color: var(--error-color);
+    background-color: rgba(193, 39, 31, 0.05);
+}
+
+/* Workspace Content */
+.dashboard-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.tab-panel {
+    display: none;
+    animation: dash-fadeIn 0.3s ease;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+@keyframes dash-fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.content-header {
+    margin-bottom: 3rem;
+}
+
+.content-header h1 {
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: var(--primary-darker);
+    letter-spacing: -0.05rem;
+    margin-bottom: 0.6rem;
+}
+
+.content-header p {
+    font-size: 1.4rem;
+    color: rgba(25, 4, 50, 0.6);
+    font-weight: 500;
+}
+
+/* Roadmaps Grid */
+.roadmaps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(28rem, 1fr));
+    gap: 2.4rem;
+}
+
+/* Roadmap Cards */
+.roadmap-card {
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 1.2rem;
+    padding: 2.2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 20rem;
+    box-shadow: 0 4px 15px rgba(25, 4, 50, 0.02);
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.roadmap-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: var(--primary-color);
+    opacity: 0.8;
+}
+
+.roadmap-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(144, 66, 241, 0.08);
+    border-color: rgba(144, 66, 241, 0.3);
+}
+
+.card-top h3 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--primary-darker);
+    line-height: 1.3;
+    margin-bottom: 0.8rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-top .card-meta {
+    font-size: 1.2rem;
+    color: rgba(25, 4, 50, 0.5);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.card-top .badge {
+    padding: 0.2rem 0.8rem;
+    background-color: rgba(144, 66, 241, 0.08);
+    color: var(--primary-color);
+    border-radius: 5rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.card-bottom {
+    margin-top: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    padding-top: 1.5rem;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.8rem;
+}
+
+.btn-icon {
+    width: 3.4rem;
+    height: 3.4rem;
+    border-radius: 0.8rem;
+    border: 1px solid var(--border-color);
+    background-color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: rgba(25, 4, 50, 0.7);
+    transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+    color: var(--primary-color);
+    background-color: rgba(144, 66, 241, 0.06);
+    border-color: rgba(144, 66, 241, 0.3);
+}
+
+.btn-icon.delete:hover {
+    color: var(--error-color);
+    background-color: rgba(193, 39, 31, 0.06);
+    border-color: rgba(193, 39, 31, 0.3);
+}
+
+.btn-view {
+    padding: 0.8rem 1.6rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 0.8rem;
+    background-color: var(--primary-darker);
+    color: var(--white);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-view:hover {
+    background-color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(144, 66, 241, 0.2);
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem;
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 1.2rem;
+    max-width: 50rem;
+    margin: 4rem auto;
+}
+
+.empty-state img {
+    width: 6.4rem;
+    margin-bottom: 2rem;
+    opacity: 0.6;
+}
+
+.empty-state h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-darker);
+    margin-bottom: 0.8rem;
+}
+
+.empty-state p {
+    font-size: 1.4rem;
+    color: rgba(25, 4, 50, 0.6);
+    margin-bottom: 2.4rem;
+    width: 80%;
+}
+
+.empty-btn {
+    padding: 1.2rem 2.4rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--white);
+    background-color: var(--primary-darker);
+    border-radius: 0.8rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.empty-btn:hover {
+    background-color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(144, 66, 241, 0.2);
+}
+
+.empty-state.hidden {
+    display: none !important;
+}
+
+/* Account settings styling */
+.account-card {
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 1.2rem;
+    padding: 3rem;
+    max-width: 60rem;
+}
+
+.account-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.account-avatar {
+    width: 6.4rem;
+    height: 6.4rem;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: var(--white);
+    font-size: 2.4rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(144, 66, 241, 0.25);
+}
+
+.account-name-group h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primary-darker);
+    letter-spacing: -0.03rem;
+}
+
+.account-name-group p {
+    font-size: 1.4rem;
+    color: rgba(25, 4, 50, 0.6);
+    font-weight: 500;
+}
+
+.account-divider {
+    border: none;
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.08);
+    margin: 2.4rem 0;
+}
+
+.account-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.4rem;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: rgba(25, 4, 50, 0.6);
+}
+
+.detail-value {
+    font-weight: 700;
+    color: var(--primary-darker);
+}
+
+.badge-primary {
+    padding: 0.4rem 1rem;
+    background-color: rgba(144, 66, 241, 0.08);
+    color: var(--primary-color);
+    border-radius: 5rem;
+    font-size: 1.2rem;
+}
+
+.badge-success {
+    padding: 0.4rem 1rem;
+    background-color: rgba(46, 125, 50, 0.08);
+    color: var(--success-color);
+    border-radius: 5rem;
+    font-size: 1.2rem;
+}
+
+/* Skeleton Loaders */
+.card-skeleton {
+    height: 20rem;
+    background: linear-gradient(90deg, #f2eff9 25%, #eae6f5 50%, #f2eff9 75%);
+    background-size: 200% 100%;
+    animation: loading-shimmer 1.5s infinite linear;
+    border-radius: 1.2rem;
+    border: 1px solid var(--border-color);
+}
+
+@keyframes loading-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.card-skeleton.hidden {
+    display: none !important;
+}
+
+/* Toast alert styled matching index.html */
+.toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background-color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.2rem 2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 20px rgba(25, 4, 50, 0.08);
+    font-size: 1.3rem;
+    font-weight: 600;
+    border-radius: 0.8rem;
+    animation: dash-toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    z-index: 100;
+}
+
+.toast.hidden {
+    display: none !important;
+}
+
+@keyframes dash-toastIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsiveness */
+@media screen and (max-width: 900px) {
+    .dashboard-layout {
+        flex-direction: column;
+        margin: 1.5rem auto;
+    }
+    
+    .dashboard-sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        flex-direction: row;
+        gap: 1rem;
+        padding: 1.5rem;
+    }
+
+    .sidebar-nav {
+        flex-direction: row;
+        flex: 1;
+    }
+
+    .sidebar-logout {
+        width: auto;
+    }
+
+    .nav-item span, .sidebar-logout span {
+        display: none;
+    }
+}
+
+/* Globe and Lock Icon Visibility Switch Styles */
+.btn-icon.visibility {
+    color: rgba(25, 4, 50, 0.4);
+}
+
+.btn-icon.visibility.public {
+    color: var(--primary-color);
+    background-color: rgba(144, 66, 241, 0.06);
+    border-color: rgba(144, 66, 241, 0.3);
+}
+
+.btn-icon.visibility:hover {
+    color: var(--primary-color);
+    background-color: rgba(144, 66, 241, 0.08);
+}
+
+/* Explore community cards metadata */
+.card-top .author-badge {
+    margin-top: 0.6rem;
+    font-size: 1.1rem;
+    color: rgba(25, 4, 50, 0.6);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.card-top .author-badge span {
+    color: var(--primary-color);
+}
+
+.btn-icon.fork:hover {
+    color: #2e7d32;
+    background-color: rgba(46, 125, 50, 0.06);
+    border-color: rgba(46, 125, 50, 0.3);
+}

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="./ruta-logo.svg" type="image/x-icon">
+  <link rel="stylesheet" href="./dashboard.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap');
+  </style>
+  <title>Ruta | Dashboard</title>
+</head>
+<body>
+  <header class="dashboard-header">
+    <div class="header-inner">
+      <div class="logo-container">
+        <a href="./index.html">
+          <img src="./ruta-logo.svg" alt="Ruta Logo">
+        </a>
+        <h1>Ruta</h1>
+      </div>
+      <div class="header-right">
+        <div class="user-badge" id="headerAvatar">U</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="dashboard-sidebar">
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-tab="roadmaps">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z"/><path d="M6 6h10M6 10h10"/></svg>
+          <span>My Roadmaps</span>
+        </button>
+        <a href="./index.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          <span>Generate New</span>
+        </a>
+        <button class="nav-item" data-tab="explore">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span>Explore Community</span>
+        </button>
+        <button class="nav-item" data-tab="account">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Account Settings</span>
+        </button>
+      </nav>
+      <button class="sidebar-logout" id="logoutBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        <span>Log Out</span>
+      </button>
+    </aside>
+
+    <!-- Main Workspace Content -->
+    <section class="dashboard-content">
+      
+      <!-- MY ROADMAPS TAB -->
+      <div class="tab-panel active" id="tab-roadmaps">
+        <header class="content-header">
+          <h1>My Saved Roadmaps</h1>
+          <p>Browse, customize, share, and track all your personal learning pathways</p>
+        </header>
+
+        <div class="roadmaps-grid" id="roadmapsGrid">
+          <!-- Skeletons render during load -->
+          <div class="card-skeleton"></div>
+          <div class="card-skeleton"></div>
+          <div class="card-skeleton"></div>
+        </div>
+
+        <!-- Empty State Container -->
+        <div class="empty-state hidden" id="emptyState">
+          <img src="./roadmap-icon.svg" alt="No Roadmaps">
+          <h2>No Roadmaps Found</h2>
+          <p>You haven't generated any learning roadmaps yet. Let's create your very first one!</p>
+          <a href="./index.html" class="empty-btn">Create Roadmap</a>
+        </div>
+      </div>
+
+      <!-- EXPLORE COMMUNITY TAB -->
+      <div class="tab-panel" id="tab-explore">
+        <header class="content-header">
+          <h1>Explore Community</h1>
+          <p>Discover high-quality learning roadmaps crafted by the community. Fork them to customize and save them under your account.</p>
+        </header>
+
+        <div class="roadmaps-grid" id="exploreGrid">
+          <div class="card-skeleton"></div>
+          <div class="card-skeleton"></div>
+          <div class="card-skeleton"></div>
+        </div>
+
+        <div class="empty-state hidden" id="exploreEmptyState">
+          <img src="./roadmap-icon.svg" alt="No Public Roadmaps">
+          <h2>No Public Roadmaps Yet</h2>
+          <p>No one has published a public roadmap yet. Be the first to share your knowledge with the world!</p>
+        </div>
+      </div>
+
+      <!-- ACCOUNT SETTINGS TAB -->
+      <div class="tab-panel" id="tab-account">
+        <header class="content-header">
+          <h1>Account Settings</h1>
+          <p>Manage your account settings, profile information, and subscription preferences</p>
+        </header>
+
+        <div class="account-card">
+          <div class="account-profile-header">
+            <div class="account-avatar" id="accountAvatar">U</div>
+            <div class="account-name-group">
+              <h2 id="accountName">User Name</h2>
+              <p id="accountEmail">user@example.com</p>
+            </div>
+          </div>
+
+          <hr class="account-divider">
+
+          <div class="account-details">
+            <div class="detail-row">
+              <span class="detail-label">Account Type</span>
+              <span class="detail-value badge-primary">Free Tier Plan</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Member Since</span>
+              <span class="detail-value" id="accountDate">May 28th, 2026</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Status</span>
+              <span class="detail-value badge-success">Active Account</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <div class="toast hidden" id="toast">
+    <img src="./export-icon.svg" alt="export icon"> 
+    <p id="toastMessage">Link copied to clipboard!</p>
+  </div>
+
+  <script src="./dashboard.js"></script>
+</body>
+</html>
