@@ -125,8 +125,15 @@ async function checkQueryParamRoadmap() {
     chatsContainer.appendChild(userMessage);
 
     try {
+        const roadmapHeaders = {};
+        const roadmapToken = localStorage.getItem("token");
+        if (roadmapToken) {
+            roadmapHeaders["Authorization"] = `Bearer ${roadmapToken}`;
+        }
+
         const response = await fetch(`${BASEURL}/api/roadmaps/${roadmapId}`, {
-            method: "GET"
+            method: "GET",
+            headers: roadmapHeaders,
         });
 
         if (!response.ok) {

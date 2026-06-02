@@ -68,19 +68,23 @@ export const getRoadmapById = async (req, res) => {
     }
     const authHeader = req.header('Authorization');
     let requesterId = null;
+    console.log('[getRoadmapById] auth header present:', Boolean(authHeader));
     if (authHeader && authHeader.startsWith('Bearer ')) {
       try {
         const jwtSecret = process.env.JWT_SECRET;
+        console.log('[getRoadmapById] JWT_SECRET present:', Boolean(jwtSecret));
         if (jwtSecret) {
           const decoded = jwt.verify(authHeader.split(' ')[1], jwtSecret);
           requesterId = decoded.id;
         }
       } catch (err) {
+        console.log('[getRoadmapById] token verify failed:', err.message);
         requesterId = null;
       }
     }
 
     const isOwner = requesterId && roadmap.userId.toString() === requesterId;
+    console.log(requesterId)
     if (!roadmap.isPublic && !isOwner) {
       return res.status(403).json({ msg: 'Access denied' });
     }
