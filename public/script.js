@@ -24,6 +24,31 @@ const BASEURL = window.location.hostname === "localhost" || window.location.host
     ? "http://localhost:3000" 
     : "https://ruta.up.railway.app";
 
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+function safeUrl(value) {
+    try {
+        const parsed = new URL(String(value ?? ""), window.location.origin);
+        if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+            return parsed.href;
+        }
+    } catch (err) {
+        return "#";
+    }
+    return "#";
+}
+
+function safeColor(value, fallback) {
+    return /^#[0-9a-fA-F]{6}$/.test(value || "") ? value : fallback;
+}
+
 const loginLink = document.getElementById("loginLink");
 const userProfile = document.getElementById("userProfile");
 const userAvatar = document.getElementById("userAvatar");
@@ -132,7 +157,7 @@ async function checkQueryParamRoadmap() {
         }
 
         // Render timeline
-        timelineHeader.innerHTML = roadmapData.title;
+        timelineHeader.textContent = roadmapData.title;
         roadmapTitle = roadmapData.title;
         generatedData = roadmapData.timeline;
         exportType = "Timeline";
@@ -143,13 +168,13 @@ async function checkQueryParamRoadmap() {
         // Add Ruta loaded bubble in chat
         const rutaMessage = document.createElement("article");
         rutaMessage.classList.add("ruta-message");
-        rutaMessage.innerHTML = `
+                rutaMessage.innerHTML = `
           <img src="./ruta-logo.svg" alt="">
           <div class="ruta-bubble">
-            <p>Here is your personalized roadmap for <strong>${roadmapData.title}</strong>. You can navigate between the Timeline View and Roadmap View or export it as a PDF.</p>
+                        <p>Here is your personalized roadmap for <strong>${escapeHTML(roadmapData.title)}</strong>. You can navigate between the Timeline View and Roadmap View or export it as a PDF.</p>
             <div class="ruta-status">
               <div class="top">
-                <p>${roadmapData.title}</p>
+                                <p>${escapeHTML(roadmapData.title)}</p>
               </div>
               <div class="status">
                 <div class="dot done"></div>
@@ -408,15 +433,15 @@ function updateRutaUI(headingAndIntroObj){
 
     lastRutaMessageId = d
 
-    rutaMessage.innerHTML = `
+        rutaMessage.innerHTML = `
       <img src="./ruta-logo.svg" alt="">
 
     <div class="ruta-bubble">
-    <p>${headingAndIntroObj.intro}</p>
+        <p>${escapeHTML(headingAndIntroObj.intro)}</p>
 
     <div class="ruta-status">
       <div class="top">
-        <p>${headingAndIntroObj.title}</p>
+                <p>${escapeHTML(headingAndIntroObj.title)}</p>
       </div>
 
       <div class="status">
@@ -446,11 +471,11 @@ function updateRutaUIWithError(errorMessage){
     const rutaMessage = document.createElement("article");
     rutaMessage.classList.add("ruta-message")
 
-    rutaMessage.innerHTML = `
+        rutaMessage.innerHTML = `
       <img src="./ruta-logo.svg" alt="">
 
     <div class="ruta-bubble">
-    <p class="error">${errorMessage}</p>
+        <p class="error">${escapeHTML(errorMessage)}</p>
 
       </div>
     `;
@@ -541,7 +566,7 @@ function createAndRenderTimeline(timelineArray = []) {
                     return `
                         <div class="single-resource">
                             <img src="${icon}" alt="icon"> 
-                            <a target="_blank" href="${resource.url}">${resource.title}</a>
+                            <a target="_blank" rel="noopener noreferrer" href="${safeUrl(resource.url)}">${escapeHTML(resource.title)}</a>
                         </div>
                     `;
                 })
@@ -549,15 +574,17 @@ function createAndRenderTimeline(timelineArray = []) {
         }
 
         // Full HTML for the timeline item
+        const emojiColor = safeColor(item.emojiDominantColor, "#2B61D4");
+        const emojiBorder = safeColor(item.emojiDominantDarkerColor, "#1C4091");
         timelineItem.innerHTML = `
-            <div style="background-color:${item.emojiDominantColor || '#2B61D4'}; border:1px solid ${item.emojiDominantDarkerColor || '#1C4091'};" class="circle">${item.emoji || '📘'}</div>
+            <div style="background-color:${emojiColor}; border:1px solid ${emojiBorder};" class="circle">${escapeHTML(item.emoji || '📘')}</div>
             <article>
                 <header>
-                    <p class="date">${item.day} - <span>${item.date_range}</span></p>
-                    <h1>${item.title}</h1>
+                    <p class="date">${escapeHTML(item.day)} - <span>${escapeHTML(item.date_range)}</span></p>
+                    <h1>${escapeHTML(item.title)}</h1>
                 </header>
                 <hr>
-                <p class="intro">${item.description}</p>
+                <p class="intro">${escapeHTML(item.description)}</p>
                 <hr>
                 ${resourcesHTML}
             </article>
@@ -582,10 +609,10 @@ function createAndRenderNodes(timelineArray=[]){
       node.id = `node-${index}`;
       node.innerHTML = `
             <div class="top">
-                  <h1>${milestone.day}</h1>
+                                    <h1>${escapeHTML(milestone.day)}</h1>
                 </div>
     
-                <p>${milestone.title}</p>
+                                <p>${escapeHTML(milestone.title)}</p>
       `;
 
       timelineContainer.appendChild(node);
@@ -621,7 +648,7 @@ async function makeFetchRequest(userRequest){
 
         lastRutaMessage = document.getElementById(lastRutaMessageId)
 
-           timelineHeader.innerHTML = introObj.title
+           timelineHeader.textContent = introObj.title
 
            roadmapTitle = introObj.title
 
@@ -744,7 +771,7 @@ async function refetch(userRequest){
 
         lastRutaMessage.querySelector(".ruta-status .status p").innerText = "Regenerating Timeline & Roadmap"
 
-           timelineHeader.innerHTML = introObj.title
+            timelineHeader.textContent = introObj.title
 
            roadmapTitle = introObj.title
 
@@ -1047,9 +1074,9 @@ if (btnCalcSchedule) {
             const dateStr = formatCalendarDate(calculatedDates[idx]);
             return `
                 <div class="preview-item">
-                    <span class="p-day">${milestone.day}</span>
-                    <span class="p-title">${milestone.title}</span>
-                    <span class="p-date">${dateStr}</span>
+                    <span class="p-day">${escapeHTML(milestone.day)}</span>
+                    <span class="p-title">${escapeHTML(milestone.title)}</span>
+                    <span class="p-date">${escapeHTML(dateStr)}</span>
                 </div>
             `;
         }).join("");

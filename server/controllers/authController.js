@@ -4,9 +4,13 @@ import User from '../models/User.js';
 
 // Helper to sign JWT
 const signToken = (user) => {
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    throw new Error('JWT secret is not configured');
+  }
   return jwt.sign(
     { id: user._id, name: user.name, email: user.email },
-    process.env.JWT_SECRET || 'ruta_secret_key',
+    jwtSecret,
     { expiresIn: '7d' }
   );
 };

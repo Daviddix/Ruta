@@ -24,6 +24,15 @@ const logoutBtn = document.getElementById("logoutBtn");
 const toast = document.getElementById("toast");
 const toastMessage = document.getElementById("toastMessage");
 
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
 // Tab toggles
 const tabButtons = document.querySelectorAll(".nav-item[data-tab]");
 const tabPanels = document.querySelectorAll(".tab-panel");
@@ -128,7 +137,7 @@ async function loadSavedRoadmaps() {
             card.innerHTML = `
                 <div class="card-top">
                     <span class="badge">${daysCountText}</span>
-                    <h3>${roadmap.title}</h3>
+                    <h3>${escapeHTML(roadmap.title)}</h3>
                     <div class="card-meta">
                         <span>Created ${createdDate}</span>
                     </div>
@@ -209,9 +218,9 @@ async function loadExploreRoadmaps() {
             card.innerHTML = `
                 <div class="card-top">
                     <span class="badge">${daysCountText}</span>
-                    <h3>${roadmap.title}</h3>
+                    <h3>${escapeHTML(roadmap.title)}</h3>
                     <div class="author-badge">
-                        Created by <span>@${roadmap.creator}</span>
+                        Created by <span>@${escapeHTML(roadmap.creator)}</span>
                     </div>
                     <div class="card-meta" style="margin-top: 0.8rem;">
                         <span>Shared ${createdDate}</span>

@@ -20,10 +20,10 @@ export const getIntroText = async (req, res) => {
       ],
     };
 
-    const model = 'gemini-2.0-flash';
+    const model = 'gemini-2.5-flash';
 
     const contents = [
-      {
+      { 
         role: 'user',
         parts: [
           {
@@ -57,8 +57,13 @@ export const generateRoadmap = async (req, res) => {
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.split(' ')[1];
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'ruta_secret_key');
-      userId = decoded.id;
+      const jwtSecret = process.env.JWT_SECRET;
+      if (!jwtSecret) {
+        console.warn('JWT_SECRET not configured; skipping optional auth');
+      } else {
+        const decoded = jwt.verify(token, jwtSecret);
+        userId = decoded.id;
+      }
     } catch (err) {
       console.log('Optional auth verification failed during /generate:', err.message);
     }
@@ -74,7 +79,7 @@ export const generateRoadmap = async (req, res) => {
       ],
     };
 
-    const model = 'gemini-2.0-flash';
+    const model = 'gemini-2.5-flash';
 
     const contents = [
       {

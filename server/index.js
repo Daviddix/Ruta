@@ -14,7 +14,26 @@ import {
 
 dotenv.config();
 
-app.use(cors()); // Enable CORS for all routes (or configure for specific origins)
+const allowedOrigins = (process.env.CORS_ORIGIN || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const defaultOrigins = [
+  "http://localhost:3000",
+  "http://127.0.0.1:5500",
+  "https://ruta.up.railway.app",
+];
+
+const corsOrigins = allowedOrigins.length > 0 ? allowedOrigins : defaultOrigins;
+
+app.use(
+  cors({
+    origin: corsOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(express.json()); // Enable parsing of JSON request bodies (if needed) 
 
 // API Routes
@@ -28,6 +47,9 @@ app.post("/generate", generateRoadmap);
 app.get("/test", testEndpoint);
 
 async function startServer() {
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is not set");
+  }
   await connectToDatabase(); 
 
   app.listen(PORT, () => {

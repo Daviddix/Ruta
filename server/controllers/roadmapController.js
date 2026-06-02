@@ -1,5 +1,6 @@
 import Roadmap from '../models/Roadmap.js';
 import { GoogleGenAI } from '@google/genai';
+import jwt from 'jsonwebtoken';
 import { extractJSON } from '../lib/helper.js';
 
 export const createRoadmap = async (req, res) => {
@@ -64,6 +65,24 @@ export const getRoadmapById = async (req, res) => {
     const roadmap = await Roadmap.findById(req.id || req.params.id);
     if (!roadmap) {
       return res.status(404).json({ msg: 'Roadmap not found' });
+    }
+    const authHeader = req.header('Authorization');
+    let requesterId = null;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      try {
+        const jwtSecret = process.env.JWT_SECRET;
+        if (jwtSecret) {
+          const decoded = jwt.verify(authHeader.split(' ')[1], jwtSecret);
+          requesterId = decoded.id;
+        }
+      } catch (err) {
+        requesterId = null;
+      }
+    }
+
+    const isOwner = requesterId && roadmap.userId.toString() === requesterId;
+    if (!roadmap.isPublic && !isOwner) {
+      return res.status(403).json({ msg: 'Access denied' });
     }
     return res.json(roadmap);
   } catch (err) {
