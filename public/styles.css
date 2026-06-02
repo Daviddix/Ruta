@@ -2045,3 +2045,103 @@ body {
         gap: 0.8rem;
     }
 }
+
+/* Changelog Preview Section */
+.changelog-preview {
+    padding: 6rem 2rem 7rem;
+    background: var(--darker-white);
+    border-top: 1px solid rgba(25, 4, 50, 0.05);
+}
+
+.changelog-preview-grid {
+    width: 95%;
+    max-width: 110rem;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+    gap: 2rem;
+}
+
+.changelog-preview-card {
+    background: var(--white);
+    border: 1px solid rgba(25, 4, 50, 0.08);
+    border-radius: 1.6rem;
+    padding: 2.2rem;
+    box-shadow: 0 1.6rem 3rem rgba(25, 4, 50, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.changelog-preview-card h3 {
+    font-size: 1.8rem;
+    color: var(--primary-darker);
+}
+
+.changelog-preview-card p {
+    font-size: 1.4rem;
+    line-height: 1.6;
+    color: rgba(25, 4, 50, 0.72);
+}
+
+.changelog-preview-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1.2rem;
+    color: rgba(25, 4, 50, 0.6);
+    font-weight: 600;
+}
+
+.changelog-pill {
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    background: rgba(144, 66, 241, 0.12);
+    color: var(--primary-darker);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08rem;
+}
+
+.changelog-date {
+    font-weight: 600;
+}
+
+.changelog-preview-cta {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: center;
+}
+
+.changelog-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.4rem;
+    font-weight: 600;
+    padding: 1.2rem 2.8rem;
+    border-radius: 999px;
+    border: 1px solid rgba(25, 4, 50, 0.15);
+    color: var(--primary-darker);
+    background: var(--white);
+    transition: all 0.2s ease;
+}
+
+.changelog-cta-btn:hover {
+    transform: translateY(-1px);
+    border-color: rgba(25, 4, 50, 0.3);
+    background: rgba(25, 4, 50, 0.04);
+}
+
+@media (max-width: 600px) {
+    .changelog-preview {
+        padding: 5rem 1.6rem 6rem;
+    }
+
+    .changelog-preview-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.6rem;
+    }
+}

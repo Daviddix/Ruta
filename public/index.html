@@ -141,6 +141,45 @@
         </div>
       </div>
 
+      <!-- CHANGELOG PREVIEW SECTION -->
+      <section class="changelog-preview" id="changelogPreview">
+        <header class="section-header">
+          <h2>Fresh from the changelog</h2>
+          <p>See what's new in Ruta — highlights from recent updates.</p>
+        </header>
+
+        <div class="changelog-preview-grid">
+          <article class="changelog-preview-card">
+            <div class="changelog-preview-meta">
+              <span class="changelog-pill">Feature</span>
+              <span class="changelog-date">Jun 2, 2026</span>
+            </div>
+            <h3>Security hardening and Gemini model upgrades</h3>
+            <p>Access controls tightened and AI generation moved to the latest model.</p>
+          </article>
+          <article class="changelog-preview-card">
+            <div class="changelog-preview-meta">
+              <span class="changelog-pill">Feature</span>
+              <span class="changelog-date">May 29, 2026</span>
+            </div>
+            <h3>AI roadmap generation with autosave</h3>
+            <p>End-to-end roadmap creation and authenticated saves on every run.</p>
+          </article>
+          <article class="changelog-preview-card">
+            <div class="changelog-preview-meta">
+              <span class="changelog-pill">Fix</span>
+              <span class="changelog-date">May 28, 2026</span>
+            </div>
+            <h3>Roadmap sharing and dashboard polish</h3>
+            <p>Sharing links, dashboard improvements, and smoother navigation.</p>
+          </article>
+        </div>
+
+        <div class="changelog-preview-cta">
+          <a class="changelog-cta-btn" href="./changelog.html">See full changelog</a>
+        </div>
+      </section>
+
       <!-- FOOTER CALL TO ACTION -->
       <footer class="landing-footer">
         <div class="footer-cta">
@@ -232,17 +271,6 @@
 
     <div class="toast hidden">
       <img src="./export-icon.svg" alt="export-icon.svg"> <p>Exporting & Downloading Roadmap</p>
-    </div>
-
-    <!-- FLOATING SAVE BAR -->
-    <div class="floating-save-bar hidden" id="floatingSaveBar">
-      <div class="save-bar-inner">
-        <span class="save-bar-msg">You have unsaved changes on this roadmap</span>
-        <div class="save-bar-actions">
-          <button class="btn-reset" id="resetChangesBtn">Reset</button>
-          <button class="btn-save" id="saveChangesBtn">Save Changes</button>
-        </div>
-      </div>
     </div>
 
     <!-- CALENDAR SYNC MODAL -->

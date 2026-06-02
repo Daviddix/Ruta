@@ -1,0 +1,232 @@
+:root {
+  --bg-color: #f9f6fe;
+  --white: #ffffff;
+  --darker-white: hsl(0, 0%, 97%);
+  --primary-color: #9042f1;
+  --primary-darker: #190432;
+  --primary-soft: rgba(144, 66, 241, 0.12);
+  --border-color: rgba(0, 0, 0, 0.12);
+  --shadow-subtle: 0 1.6rem 3rem rgba(17, 12, 35, 0.08);
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--primary-darker);
+}
+
+.changelog-header {
+  height: 5.5rem;
+  background-color: var(--white);
+  box-shadow: 0 0 2rem 0.2rem rgba(0, 0, 0, 0.05);
+}
+
+.changelog-link {
+  text-decoration: none;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  background: var(--primary-soft);
+}
+
+.changelog-main {
+  width: 95%;
+  max-width: 120rem;
+  margin: 3rem auto 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+}
+
+.changelog-main section{
+    margin: 0 0 3rem 0;
+}
+
+.changelog-hero {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 3rem;
+  align-items: stretch;
+}
+
+.hero-copy h1 {
+  font-family: "Instrument Serif", "Instrument Sans", serif;
+  font-size: 4.2rem;
+  margin-top: 1rem;
+}
+
+.hero-subtitle {
+  font-size: 1.6rem;
+  margin-top: 1.2rem;
+  max-width: 52rem;
+  color: rgba(25, 4, 50, 0.75);
+}
+
+.hero-badge {
+  display: inline-block;
+  font-size: 1.2rem;
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--primary-color);
+  background: var(--primary-soft);
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.meta-pill {
+  font-size: 1.2rem;
+  background: var(--white);
+  border: 1px solid var(--border-color);
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.hero-panel {
+  background: var(--white);
+  border-radius: 1.6rem;
+  padding: 2.4rem;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-subtle);
+}
+
+.hero-panel h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.hero-panel ul {
+  list-style: none;
+  display: grid;
+  gap: 1rem;
+  font-size: 1.4rem;
+  color: rgba(25, 4, 50, 0.8);
+}
+
+.hero-panel li::before {
+  content: "•";
+  color: var(--primary-color);
+  margin-right: 0.6rem;
+}
+
+.changelog-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.section-heading h2 {
+  font-size: 2.4rem;
+}
+
+.section-heading p {
+  font-size: 1.4rem;
+  color: rgba(25, 4, 50, 0.7);
+}
+
+.changelog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+  gap: 2rem;
+}
+
+.changelog-card {
+  background: var(--white);
+  border-radius: 1.4rem;
+  border: 1px solid var(--border-color);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: var(--shadow-subtle);
+}
+
+.changelog-card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.changelog-card h3 {
+  font-size: 1.8rem;
+}
+
+.changelog-card p {
+  font-size: 1.4rem;
+  color: rgba(25, 4, 50, 0.75);
+}
+
+.changelog-card .meta {
+  font-size: 1.2rem;
+  color: rgba(25, 4, 50, 0.55);
+  font-weight: 600;
+}
+
+.changelog-card.empty {
+  text-align: center;
+}
+
+.tag {
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.tag-feature {
+  color: #3f1d79;
+  background: rgba(144, 66, 241, 0.16);
+  border-color: rgba(144, 66, 241, 0.25);
+}
+
+.tag-fix {
+  color: #0f5132;
+  background: rgba(46, 125, 50, 0.16);
+  border-color: rgba(46, 125, 50, 0.25);
+}
+
+.tag-breaking {
+  color: #8a120f;
+  background: rgba(193, 39, 31, 0.15);
+  border-color: rgba(193, 39, 31, 0.25);
+}
+
+.tag-chore {
+  color: #2d2d2d;
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.date {
+  font-size: 1.2rem;
+  color: rgba(25, 4, 50, 0.6);
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .changelog-hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .changelog-main {
+    margin-top: 2rem;
+  }
+
+  .hero-copy h1 {
+    font-size: 3.4rem;
+  }
+}
