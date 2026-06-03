@@ -1,7 +1,7 @@
 // Determine API Base URL dynamically
 const BASEURL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" 
     ? "http://localhost:3000" 
-    : "https://ruta.up.railway.app";
+    : "https://ruta-backend-55j4.onrender.com";
 
 const token = localStorage.getItem("token");
 

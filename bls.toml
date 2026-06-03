@@ -6,7 +6,7 @@ production_host = "silver-donkey-gertrudis-u7lvotea.bls.dev"
 [deployment]
 permission = "public"
 nodes = 1
-permissions = [ "https://ruta.up.railway.app" ]
+permissions = [ "https://ruta-backend-55j4.onrender.com" ]
 
 [build]
 dir = "build"
