@@ -23,7 +23,8 @@ const defaultOrigins = [
   "http://localhost:3000",
   "http://127.0.0.1:5500",
   "https://ruta.up.railway.app",
-  "https://ruta-one.vercel.app"
+  "https://ruta-one.vercel.app",
+  "https://ruta-one.vercel.app/"
 ];
 
 const corsOrigins = allowedOrigins.length > 0 ? allowedOrigins : defaultOrigins;
